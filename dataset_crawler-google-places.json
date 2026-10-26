@@ -1,0 +1,226 @@
+[{
+  "title": "GIANTY VIETNAM",
+  "subTitle": null,
+  "description": null,
+  "ownerDescription": "GIANTY is a company specializing in software development, creative production, and digital content services. With a team of over 350 members, GIANTY focuses on delivering solutions in game development, animation, AI, and digital services, aiming to create innovative and impactful experiences for the global market.",
+  "price": null,
+  "categoryName": "Văn phòng công ty",
+  "address": "Sala Urban Area, 46-48-50-52 B4, Street, Thủ Đức City, Hồ Chí Minh 700000, Việt Nam",
+  "neighborhood": "Street, Thủ Đức City",
+  "street": "Sala Urban Area, 46-48-50-52 B4",
+  "city": "Hồ Chí Minh",
+  "postalCode": "700000",
+  "state": "Thủ Đức City, Hồ Chí Minh",
+  "countryCode": "VN",
+  "website": "https://www.gianty.com/",
+  "phone": "+84 28 3636 2829",
+  "phoneUnformatted": "+842836362829",
+  "claimThisBusiness": false,
+  "location": {
+    "lat": 10.7727886,
+    "lng": 106.727189
+  },
+  "locatedIn": null,
+  "floor": null,
+  "plusCode": "QPFG+4V An Khánh, Hồ Chí Minh, Việt Nam",
+  "menu": null,
+  "servicesLink": null,
+  "totalScore": 4.9,
+  "permanentlyClosed": false,
+  "temporarilyClosed": false,
+  "placeId": "ChIJIzG8fcwldTER2iqUy9zCz04",
+  "categories": [
+    "Văn phòng công ty",
+    "Xưởng phim hoạt hình",
+    "Xưởng nghệ thuật"
+  ],
+  "fid": "0x317525cc7dbc3123:0x4ecfc2dccb942ada",
+  "cid": "5678971908701563610",
+  "reviewsCount": 48,
+  "reviewsDistribution": {
+    "oneStar": 0,
+    "twoStar": 0,
+    "threeStar": 2,
+    "fourStar": 2,
+    "fiveStar": 44
+  },
+  "imagesCount": 77,
+  "imageCategories": [],
+  "scrapedAt": "2026-10-21T07:42:24.951Z",
+  "reserveTableUrl": null,
+  "googleFoodUrl": null,
+  "hotelStars": null,
+  "hotelDescription": null,
+  "checkInDate": null,
+  "checkOutDate": null,
+  "hotelAds": [],
+  "popularTimesLiveText": null,
+  "popularTimesLivePercent": null,
+  "popularTimesHistogram": {},
+  "openingHours": [
+    {
+      "day": "Thứ Tư",
+      "hours": "08:00 to 17:00"
+    },
+    {
+      "day": "Thứ Năm",
+      "hours": "08:00 to 17:00"
+    },
+    {
+      "day": "Thứ Sáu",
+      "hours": "08:00 to 17:00"
+    },
+    {
+      "day": "Thứ Bảy",
+      "hours": "Đóng cửa"
+    },
+    {
+      "day": "Chủ Nhật",
+      "hours": "Đóng cửa"
+    },
+    {
+      "day": "Thứ Hai",
+      "hours": "08:00 to 17:00"
+    },
+    {
+      "day": "Thứ Ba",
+      "hours": "08:00 to 17:00"
+    }
+  ],
+  "wasOpenAtScrapeTime": true,
+  "peopleAlsoSearch": [],
+  "placesTags": [],
+  "reviewsTags": [],
+  "additionalInfo": {
+    "Phù hợp cho người khuyết tật": [
+      {
+        "Lối vào cho xe lăn": true
+      },
+      {
+        "Chỗ ngồi cho xe lăn": false
+      },
+      {
+        "Vòng trợ thính": false
+      }
+    ]
+  },
+  "gasPrices": [],
+  "questionsAndAnswers": [],
+  "url": "https://www.google.com/maps/search/?api=1&query=GIANTY%20VIETNAM&query_place_id=ChIJIzG8fcwldTER2iqUy9zCz04",
+  "searchString": "Direct Detail URL: https://www.google.com/maps/place/GIANTY+VIETNAM/@10.7727886,106.7246087,17z/data=!3m1!4b1!4m6!3m5!1s0x317525cc7dbc3123:0x4ecfc2dccb942ada!8m2!3d10.7727886!4d106.727189!16s%2Fg%2F11hdpg0lp2?entry=ttu&g_ep=EgoyMDI2MTAxOC4wIKXMDSoASAFQAw%3D%3D",
+  "language": "vi",
+  "inputStartUrl": "https://www.google.com/maps/place/GIANTY+VIETNAM/@10.7727886,106.7246087,17z/data=!3m1!4b1!4m6!3m5!1s0x317525cc7dbc3123:0x4ecfc2dccb942ada!8m2!3d10.7727886!4d106.727189!16s%2Fg%2F11hdpg0lp2?entry=ttu&g_ep=EgoyMDI2MTAxOC4wIKXMDSoASAFQAw%3D%3D",
+  "isAdvertisement": false,
+  "imageUrl": "https://lh3.googleusercontent.com/grass-cs/AABkmLcEKmK56djmvfv5Wz78P1eqYwsP0OWHxwbDipPmA56-gOGV0UijXzk0TyZhpNVA-AAoDzUcxksbPbnTsqu4n4QYUt6bPs3L-Suj4iCYX2h40zqvtbBWBKwTm2g2wYTY6AvwJ9lWtt9gshQ=w408-h272-k-no",
+  "kgmid": "/g/11hdpg0lp2",
+  "businessProfileId": "8374917239224497175",
+  "webResults": [],
+  "tableReservationLinks": [],
+  "tableReservationProviders": [],
+  "bookingLinks": [],
+  "restaurantData": {
+    "tableReservationProvider": null
+  },
+  "ownerUpdates": [
+    {
+      "text": "🌙 LUNAR PULSE is coming to PAX West 2026! 🌙\nAfter making its playable demo debut at gamescom, LUNAR PULSE is heading to North America! 🎮✨\nWe’re excited to announce that LUNAR PULSE will be featured at PAX West 2026, giving players the chance to step into the world of the game and experience it for themselves.\n📍 Arch Building | Booth 817 | 04 - 07 Sep, 2026\n🤝 JETRO Booth\nCome by, play the demo, and grab some exclusive swag while you’re there! 🎁\nWe’d love to see you at PAX West and introduce you to LUNAR PULSE. 🌙\n✨ Add LUNAR PULSE to your wishlist and stay tuned for more!\n",
+      "buttonText": "Mua",
+      "buttonLink": "https://store.steampowered.com/app/4555610/",
+      "date": "2026-09-22T02:38:47.000Z",
+      "imageUrl": "https://lh3.googleusercontent.com/geougc/AF1QipO6buAwW-MY994L1XPglSFuvHSCKexn5uOr2HoI=h400-no"
+    },
+    {
+      "text": "Day 1 at kicef 2026! 🇰🇷\r\n\r\nGIANTY had the chance to meet and connect with businesses and potential partners from different industries.\r\n\r\nThis time, we’re looking for the right partners to build our ecosystem and explore new markets, especially across Physical AI, Healthcare, Manufacturing, and Education.\r\n\r\nOne interesting discovery today: we came across a HealthTech company using materials made in Vietnam. 🇻🇳 A small but surprising detail that shows Vietnam’s growing presence in the global technology and supply chain ecosystem.\r\n\r\nAnd of course, Tengos AI - Multilingual AI Assistant for Work and Study has been getting lots of attention from visitors and exhibitors! With its real-time translation, Tengos makes communication and connection easier, breaking down language barriers right at the event. 🥰\r\n\r\nTwo more days to connect, discover, and explore new opportunities! 👀 ",
+      "buttonText": "Tìm hiểu thêm",
+      "buttonLink": "https://www.facebook.com/share/p/1D6xAcuXf9/",
+      "date": "2026-09-15T03:32:59.000Z",
+      "imageUrl": "https://lh3.googleusercontent.com/geougc/AF1QipMT8_zAHGP_5YyTPdXIdNEFzQLySM2ot_Wq_ed2=h400-no"
+    },
+    {
+      "text": "GIANTY at AI Agent DXPO Tokyo 2026\r\n\r\nTwo days of conversations, connections, and exploring new possibilities with AI.\r\nOn August 20–21, GIANTY participated in AI Agent DXPO Tokyo ’26【Summer】 at Tokyo Big Sight. It was a great opportunity for us to showcase our AI solutions while connecting with businesses, developers, and technology enthusiasts. 🤝\r\n\r\nAt the GIANTY booth, visitors had the opportunity to explore Doraverse, Tengos AI, Mimi (a voice chat AI for elderly care), as well as our AI-powered development solutions.\r\n\r\nThank you to everyone who visited our booth and took the time to connect with the GIANTY team!",
+      "buttonText": null,
+      "buttonLink": null,
+      "date": "2026-08-24T08:46:19.000Z",
+      "imageUrl": "https://lh3.googleusercontent.com/geougc/AF1QipN1p58iJR3b0HD8vwRyClxOnkCqmO_5WF3F2TSz=h400-no"
+    },
+    {
+      "text": "【Your Trusted Tech Partner】🌟\n\nBuild a lasting partnership with GIANTY VIETNAM Co., Ltd. We provide consistent IT outsourcing and software development outsourcing. Work with an offshore development company Vietnam that values your long-term success.\n\n――――――――――――――――\n📍GIANTY VIETNAM Co., Ltd\n700000 Thành phố Hồ Chí Minh Thủ Đức City 46-48-50-52 B4 Street, Sala Urban Area, An Lợi Đông Ward,\n📲For inquiries or consultations, please feel free to click the \"Book\" button!\n――――――――――――――――",
+      "buttonText": null,
+      "buttonLink": null,
+      "date": "2026-08-22T03:01:21.000Z",
+      "imageUrl": "https://lh3.googleusercontent.com/geougc/AF1QipP5OVeknB8vWlPTjMjQQ4EXmyOmh3d5MiOuafja=h400-no"
+    },
+    {
+      "text": " 🎮 LUNAR PULSE is coming to gamescom 2026!\r\nGIANTY is excited to share that LUNAR PULSE, a game GIANTY is co-developing with Fahrenheit 213 (213F), will make its first playable demo appearance at gamescom 2026 in Cologne, Germany, through the JETRO Pavilion.\r\nThis special demo is designed to give players a first-hand look at the core tactical mechanics of LUNAR PULSE:\r\n⚡ Fast-Paced Duels: Intense one-on-one battles against CPU opponents, with each match lasting approximately one minute.\r\n🃏 Open-Hand Strategy: Each player has a 15-card deck and a 5-card hand, with both players’ hands fully revealed throughout the battle.\r\n🧠 Simultaneous Action Selection: Both sides choose their actions at the same time, challenging you to read the situation, anticipate your opponent’s next move, and make the right decision.\r\nEvent Details:\r\n 📍 JETRO Pavilion | Hall 10.2 · E043g · Indie Area\r\n 📅 August 26–30, 2026\r\n 🎮 Demo available in English, Japanese, and German\r\nGIANTY will continue sharing more updates throughout gamescom 2026, so stay tuned!\r\nIf you're excited about LUNAR PULSE, don't forget to add it to your Steam wishlist:\r\n",
+      "buttonText": "Tìm hiểu thêm",
+      "buttonLink": "https://www.gianty.com/lunar-pulse-first-demo-at-gamescom-2026-via-jetro/",
+      "date": "2026-08-21T08:53:06.000Z",
+      "imageUrl": "https://lh3.googleusercontent.com/geougc/AF1QipO8LpXpHK2kJR5vm6YRdeyiZLK9ahPfk1q4k-AI=h400-no"
+    },
+    {
+      "text": "【Scalable IT Solutions】📈\n\nScale your business with IT outsourcing from GIANTY VIETNAM Co., Ltd. We offer flexible software development outsourcing to meet your needs. Trust a professional offshore development company Vietnam for your growth results.\n\n――――――――――――――――\n📍GIANTY VIETNAM Co., Ltd\n700000 Thành phố Hồ Chí Minh Thủ Đức City 46-48-50-52 B4 Street, Sala Urban Area, An Lợi Đông Ward,\n📲For inquiries or consultations, please feel free to click the \"Book\" button!\n――――――――――――――――",
+      "buttonText": null,
+      "buttonLink": null,
+      "date": "2026-08-21T03:00:17.000Z",
+      "imageUrl": "https://lh3.googleusercontent.com/geougc/AF1QipP2pSzjm3NGefXh7dl9s2M2-jMWQGi2ABv9BtPC=h400-no"
+    },
+    {
+      "text": "【Dedicated Professional Team】🤝\r\n\r\nOur team at GIANTY VIETNAM Co., Ltd is praised for professionalism and skill. We offer expert IT outsourcing and software development outsourcing. Partner with an offshore development company Vietnam that cares.\r\n\r\n――――――――――――――――\r\n📍GIANTY VIETNAM Co., Ltd\r\n700000 Thành phố Hồ Chí Minh Thủ Đức City 46-48-50-52 B4 Street, Sala Urban Area, An Lợi Đông Ward,\r\n📲For inquiries or consultations, please feel free to click the \"Book\" button!\r\n――――――――――――――――",
+      "buttonText": "Tìm hiểu thêm",
+      "buttonLink": "https://www.gianty.com/",
+      "date": "2026-08-20T03:00:47.000Z",
+      "imageUrl": "https://lh3.googleusercontent.com/geougc/AF1QipN7q55JpdiPNcZcL3VdfS4QXLPbsm8LyDHq_BcT=h400-no"
+    },
+    {
+      "text": "【Reliable Software Experts】💻\n\nFor robust IT outsourcing, choose GIANTY VIETNAM Co., Ltd. We specialize in software development outsourcing that prioritizes detail and responsiveness. Experience quality with an offshore development company Vietnam.\n\n――――――――――――――――\n📍GIANTY VIETNAM Co., Ltd\n700000 Thành phố Hồ Chí Minh Thủ Đức City 46-48-50-52 B4 Street, Sala Urban Area, An Lợi Đông Ward,\n📲For inquiries or consultations, please feel free to click the \"Book\" button!\n――――――――――――――――",
+      "buttonText": null,
+      "buttonLink": null,
+      "date": "2026-08-19T03:01:21.000Z",
+      "imageUrl": "https://lh3.googleusercontent.com/geougc/AF1QipMXUJ6brYI5VOOe_6gzKWeE2iq3vd43gwMfSDaJ=h400-no"
+    },
+    {
+      "text": "【Professional Digital Solutions】🚀\n\nExperience professional software development outsourcing with GIANTY VIETNAM Co., Ltd. As a trusted offshore development company Vietnam, we provide high-quality IT outsourcing to bring your digital visions to life.\n\n――――――――――――――――\n📍GIANTY VIETNAM Co., Ltd\n700000 Thành phố Hồ Chí Minh Thủ Đức City 46-48-50-52 B4 Street, Sala Urban Area, An Lợi Đông Ward,\n📲For inquiries or consultations, please feel free to click the \"Book\" button!\n――――――――――――――――",
+      "buttonText": null,
+      "buttonLink": null,
+      "date": "2026-08-18T03:01:11.000Z",
+      "imageUrl": "https://lh3.googleusercontent.com/geougc/AF1QipO3qrhpRQ1_wUEIJDdPLnhakdy7GHR-VpJgc5l4=h400-no"
+    },
+    {
+      "text": "【Meet Our Dedicated Tech Specialists】🤝\nThe heart of GIANTY VIETNAM Co., Ltd is our skilled and friendly team. We take pride in being a reliable offshore development company Vietnam where experts in software development outsourcing thrive. Whether you need IT outsourcing for a short-term task or long-term game development outsourcing, our staff is committed to your success. With deep expertise in 2D 3D art outsourcing, our creative professionals work closely with you to ensure every detail is perfect. Join a team that values partnership and technical excellence.\n――――――――――――――――\n📍GIANTY VIETNAM Co., Ltd\nAddress: 46-48-50-52 B4 Street, Sala Urban Area, An Lợi Đông Ward, Thủ Đức City, Ho Chi Minh City 700000\n📲 For inquiries or consultations, please click the \"Book\" button.\n――――――――――――――――",
+      "buttonText": null,
+      "buttonLink": null,
+      "date": "2026-08-14T03:00:03.000Z",
+      "imageUrl": "https://lh3.googleusercontent.com/geougc/AF1QipNoB_K9y1hqp9RCXF8VQdBUIgELNhwwvS4HJBmT=h400-no"
+    }
+  ],
+  "imageUrls": [],
+  "reviews": [
+    {
+      "reviewerId": null,
+      "reviewerUrl": null,
+      "name": null,
+      "reviewerNumberOfReviews": 2,
+      "isLocalGuide": false,
+      "reviewerPhotoUrl": null,
+      "text": "Tôi có dịp làm việc trực tiếp với đội ngũ ở đây và cảm nhận rõ sự chuyên nghiệp trong cách phối hợp. Mọi người nắm chuyên môn tốt, theo sát công việc, trao đổi kỹ và có trách nhiệm với từng hạng mục. Chất lượng bàn giao chỉn chu, đúng những gì đã thống nhất và tiến độ cũng được giữ khá ổn định nên tôi yên tâm trong suốt quá trình làm việc. Có những lúc cao điểm nếu phản hồi nhanh hơn một chút nữa thì sẽ càng thuận tiện, nhưng nhìn chung đây là một đối tác đáng tin cậy, tôi sẵn sàng giới thiệu cho đồng nghiệp hoặc khách hàng khi có nhu cầu tương tự.",
+      "textTranslated": null,
+      "publishAt": "22 giờ trước",
+      "publishedAtDate": "2026-10-20T08:55:50.430Z",
+      "likesCount": 0,
+      "reviewId": "Ci9DQUlRQUNvZENodHljRjlvT2tadWMwczBaSGc1VUdVMWVreGZUMmxuUzFCVWNFRRAB",
+      "reviewUrl": null,
+      "reviewOrigin": "Google",
+      "stars": 5,
+      "rating": null,
+      "responseFromOwnerDate": "2026-10-21T02:03:23.000Z",
+      "responseFromOwnerText": "Cảm ơn bạn rất nhiều vì đã dành thời gian để chia sẻ trải nghiệm làm việc với đội ngũ của chúng tôi. Chúng tôi rất vui khi biết bạn cảm nhận được sự chuyên nghiệp và trách nhiệm trong công việc của chúng tôi. Sự hài lòng của bạn về chất lượng bàn giao cũng như tiến độ là động lực lớn đối với toàn bộ đội ngũ tại GIANTY VIETNAM Co., Ltd.\n\nChúng tôi sẽ ghi nhận ý kiến về tốc độ phản hồi để thực hiện tốt hơn trong tương lai. Hy vọng bạn sẽ tiếp tục ủng hộ và giới thiệu chúng tôi tới đồng nghiệp và khách hàng khi có nhu cầu về IT outsourcing, game development outsourcing. Tại GIANTY VIETNAM Co., Ltd, chúng tôi luôn sẵn sàng đồng hành cùng bạn trong các dự án tiếp theo.",
+      "reviewImageUrls": [],
+      "reviewContext": {},
+      "reviewDetailedRating": {},
+      "visitedIn": null,
+      "originalLanguage": "vi",
+      "translatedLanguage": null
+    }
+  ],
+  "leadsEnrichment": []
+}]

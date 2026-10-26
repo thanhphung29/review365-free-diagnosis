@@ -17,7 +17,6 @@ export interface Check {
 export interface Group {
   key: GroupKey;
   name: string;
-  icon: string;
   checks: Check[];
   passed: number;
   measured: number;
@@ -48,11 +47,11 @@ export type Place = Record<string, unknown>;
 
 // ── Checklist definition (REVIEW365, 20 items) ─────────────────────────────
 // Criteria the public crawl can only approximate are reported as unmeasurable (see Review365_Analysis_1_Store.xlsx)
-const GROUPS: { key: GroupKey; name: string; icon: string }[] = [
-  { key: 'basic', name: 'Thông tin cơ bản', icon: '📄' },
-  { key: 'posts', name: 'Bài đăng', icon: '📈' },
-  { key: 'photos', name: 'Ảnh', icon: '🖼️' },
-  { key: 'reviews', name: 'Đánh giá', icon: '⭐' },
+const GROUPS: { key: GroupKey; name: string }[] = [
+  { key: 'basic', name: 'Thông tin cơ bản' },
+  { key: 'posts', name: 'Bài đăng' },
+  { key: 'photos', name: 'Ảnh' },
+  { key: 'reviews', name: 'Đánh giá' },
 ];
 export const GRADE_LABEL: Record<Grade, string> = { A: 'Xuất sắc', B: 'Tốt', C: 'Trung bình', D: 'Cần cải thiện', E: 'Kém' };
 
