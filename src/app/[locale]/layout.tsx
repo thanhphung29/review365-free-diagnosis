@@ -16,6 +16,7 @@ const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   : 'http://localhost:3000';
 const OG_LOCALE: Record<Locale, string> = { vi: 'vi_VN', en: 'en_US', ja: 'ja_JP' };
+const SHARE_IMAGE = { url: '/thumb-op.png', width: 940, height: 529, alt: 'Review365' };
 
 const sans = Be_Vietnam_Pro({ subsets: ['latin', 'vietnamese'], weight: ['400', '500', '600', '700'], variable: '--font-sans' });
 const hand = Dancing_Script({ subsets: ['latin', 'vietnamese'], weight: ['500'], variable: '--font-hand' });
@@ -29,14 +30,21 @@ export async function generateMetadata({ params }: LayoutProps<'/[locale]'>): Pr
   const t = await getTranslations({ locale, namespace: 'meta' });
   const title = t('title');
   const description = t('description');
-  // Link previews (Facebook, Zalo, X…). The image comes from ./opengraph-image.tsx.
+  // Link previews (Facebook, Zalo, X…), with the SEO image from public/.
   // No og:url on purpose: a shared report (?r=…) must stay the link people land on, not the home page.
   return {
     metadataBase: new URL(SITE_URL),
     title,
     description,
-    openGraph: { type: 'website', siteName: 'Review365', title, description, locale: OG_LOCALE[locale as Locale] ?? 'vi_VN' },
-    twitter: { card: 'summary_large_image', title, description },
+    icons: {
+      icon: [
+        { url: '/favicon.ico', sizes: 'any' },
+        { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+      ],
+      apple: { url: '/apple-touch-icon.png', sizes: '180x180' },
+    },
+    openGraph: { type: 'website', siteName: 'Review365', title, description, locale: OG_LOCALE[locale as Locale] ?? 'vi_VN', images: [SHARE_IMAGE] },
+    twitter: { card: 'summary_large_image', title, description, images: [SHARE_IMAGE] },
   };
 }
 

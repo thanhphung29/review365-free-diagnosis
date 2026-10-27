@@ -2,9 +2,7 @@
   "meta": {
     "title": "Review: Google Business Profile report",
     "description": "Check a Google Business Profile with Review365",
-    "reportTitle": "Review365: Google Maps health check for {name}",
-    "ogHeadline": "Free Google Maps profile check",
-    "ogSub": "20 criteria · Results in 1–2 minutes · No sign-in needed"
+    "reportTitle": "Review365: Google Maps health check for {name}"
   },
   "lang": {
     "label": "Language",
