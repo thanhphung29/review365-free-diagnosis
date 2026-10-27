@@ -421,7 +421,8 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 @media print {
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   html { scroll-behavior: auto; }
-  body { background: #fff; }
+  /* A4 minus the 12mm margins: the PDF is laid out at the same width on a phone as on a PC */
+  body { width: 186mm; margin: 0 auto; background: #fff; }
   .hero, .ov-actions, .ov-all, .ov-groups-foot, .to-top, .results::before { display: none !important; }
   .results { min-height: 0; padding: 0; background: #fff; }
   .wrap { max-width: none; padding: 0; }
