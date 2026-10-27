@@ -430,7 +430,9 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
   .overview { margin-bottom: 16px; padding-top: 0; }
   .ov-top { grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; }
   .ov-score, .ov-group, .item, .locked-zone, .reviews-summary, .tree-head { break-inside: avoid; }
-  .tree-head { break-after: avoid; padding: 10px 0; margin-bottom: 2px; }
+  .tree-head { break-after: avoid; page-break-after: avoid; padding: 10px 0; margin-bottom: 2px; }
+  /* each group (heading + its cards) stays on one page; every group is shorter than an A4 page */
+  .tree-item { break-inside: avoid; page-break-inside: avoid; }
   .print-only { display: block; }
   /* Chrome prints soft shadows as solid boxes; the CTAs' hover wave layer has no use on paper */
   *, *::before, *::after { box-shadow: none !important; }
