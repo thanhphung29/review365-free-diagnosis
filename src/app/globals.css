@@ -49,7 +49,7 @@ body { margin: 0; background: var(--bg); color: var(--fg); font: var(--fs-base)/
 .tree-title h2 { display: block; font-size: var(--fs-h3); font-weight: 700; color: var(--ink); }
 .tree-item > .card { margin-bottom: 0; }
 .tree-item > .card > .item-grid:first-child, .tree-item > .card > .reviews-summary:first-child { margin-top: 0; }
-@media (max-width: 640px) {
+@media screen and (max-width: 640px) {
   .details-tree { padding-left: 36px; }
   .details-tree::before { left: 13px; }
   .tree-node { left: -36px; width: 28px; height: 28px; }
@@ -186,17 +186,17 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 .ov-hand svg:last-child { font-size: 16px; }
 .ov-skyline { width: 280px; max-width: 45%; height: auto; opacity: .9; }
 
-@media (max-width: 1040px) {
+@media screen and (max-width: 1040px) {
   .ov-top { grid-template-columns: 1fr; }
   .ov-score { max-width: 520px; width: 100%; justify-self: center; }
 }
-@media (max-width: 720px) {
+@media screen and (max-width: 720px) {
   .ov-group-grid { grid-template-columns: 1fr; }
   .ov-groups-head { flex-wrap: wrap; }
   .ov-all { margin-left: 0; }
   .ov-skyline { display: none; }
 }
-@media (max-width: 640px) {
+@media screen and (max-width: 640px) {
   .store-name { font-size: calc(var(--fs-h2) + 4px); }
   .store-facts { margin-left: 0; gap: 6px 18px; }
   .store-facts > * + *::before { display: none; }
@@ -230,7 +230,7 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 .group-reviews .item-grid > .locked-zone { grid-column: 1 / -1; }
 /* an odd check left alone on the last row spans it, instead of leaving half the row empty */
 .item-grid > .item:nth-of-type(odd):is(:last-child, :nth-last-child(2):has(+ .locked-zone)) { grid-column: 1 / -1; }
-@media (max-width: 720px) { .item-grid { grid-template-columns: 1fr; } }
+@media screen and (max-width: 720px) { .item-grid { grid-template-columns: 1fr; } }
 .item .body { flex: 1; min-width: 0; }
 .item .title { font-weight: 500; font-size: var(--fs-base); }
 .item .desc { font-size: 12px; color: var(--muted); }
@@ -247,15 +247,15 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 .lz-titles { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; padding: 0; list-style: none; }
 .lz-head .cta { align-self: center; }
 /* phones: the button drops under the titles, full width */
-@media (max-width: 640px) { .lz-head { flex-wrap: wrap; } .lz-text { flex-basis: calc(100% - 42px); } .lz-head .cta { flex: 1 1 100%; text-align: center; } }
+@media screen and (max-width: 640px) { .lz-head { flex-wrap: wrap; } .lz-text { flex-basis: calc(100% - 42px); } .lz-head .cta { flex: 1 1 100%; text-align: center; } }
 /* phones: the locked titles become a plain bulleted list instead of chips */
-@media (max-width: 640px) {
+@media screen and (max-width: 640px) {
   .lz-head .lz-titles { display: grid; gap: 4px; padding-left: 18px; list-style: disc; }
   .lz-head .lz-titles li { padding: 0; border: 0; border-radius: 0; background: none; color: var(--fg); }
   .lz-titles li::marker { color: var(--muted); }
 }
 .lz-titles li { padding: 3px 10px; border-radius: 999px; background: #fff; border: 1px solid #dfe3e7; color: var(--muted); font-size: var(--fs-sm); }
-@media (max-width: 640px) {
+@media screen and (max-width: 640px) {
 }
 @media print {
   body { background: #fff; }
@@ -282,7 +282,7 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 .lang-menu [aria-selected=true] button { color: var(--brand); font-weight: 500; }
 .lang-code { width: 26px; padding: 1px 0; border-radius: 6px; background: var(--surface); color: var(--muted); font-size: 11px; font-weight: 600; text-align: center; }
 .lang-tick { margin-left: auto; color: var(--teal); font-size: 12px; }
-@media (max-width: 640px) {
+@media screen and (max-width: 640px) {
   .lang-switch { top: 12px; right: 12px; }
   .app:not(.idle) .lang-switch { top: 14px; translate: none; }
   .app:not(.idle) .crawl { padding-right: 16px; }
@@ -342,7 +342,7 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 .search .go .spinner { margin-right: 0; }
 .status { font-size: var(--fs-sm); border-radius: 8px; padding: 8px 12px; background: var(--na-bg); color: var(--na-fg); }
 .status.error { background: var(--bad-bg); color: var(--bad-fg); }
-@media (max-width: 640px) {
+@media screen and (max-width: 640px) {
   .logo { --logo-h: 26px; --text: 34px; }
   .perks { gap: 6px 14px; }
   .app:not(.idle) .hero { position: relative; }
@@ -383,7 +383,7 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 .ov-unlock-ic { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 999px; background: #fff; color: var(--cta); font-size: 14px; }
 .ov-unlock .cta, .lz-head .cta { padding: 10px 18px; border-radius: 999px; }
 /* phones: the button drops under the text, full width */
-@media (max-width: 640px) { .ov-unlock .cta { flex: 1 1 100%; text-align: center; } }
+@media screen and (max-width: 640px) { .ov-unlock .cta { flex: 1 1 100%; text-align: center; } }
 
 /* review summary (inside the "Đánh giá" group) */
 .reviews-summary { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 16px 32px; align-items: center; margin: 14px 0 6px; padding: 20px 24px; border-radius: 14px; background: #fafbfb; border: 1px solid #f0f1f3; }
@@ -409,8 +409,8 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 .rs-insights b { font-size: var(--fs-h3); font-weight: 500; color: var(--fg); }
 .rs-insights span { font-size: var(--fs-sm); color: var(--muted); text-align: center; }
 /* phones: the star range goes on its own line under the label */
-@media (max-width: 640px) { .rs-insights span span { display: block; } }
-@media (max-width: 640px) {
+@media screen and (max-width: 640px) { .rs-insights span span { display: block; } }
+@media screen and (max-width: 640px) {
   .reviews-summary { grid-template-columns: 1fr; padding: 16px; }
   .rs-score { padding: 0 0 14px; border-right: 0; border-bottom: 1px solid var(--border); }
 }
