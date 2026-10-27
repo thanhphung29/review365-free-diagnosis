@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Báo cáo Google Business Profile",
-    "description": "Chẩn đoán hồ sơ Google Business Profile theo checklist REVIEW365 từ dữ liệu crawl Apify",
+    "title": "Review: Báo cáo Google Business Profile",
+    "description": "Chẩn đoán hồ sơ Google Business Profile theo Review365",
     "reportTitle": "Review365: Báo cáo kiểm tra sức khoẻ Google Maps của {name}"
   },
   "lang": {
@@ -28,7 +28,8 @@
       "invalidLink": "Link chưa đúng — cần link Google Maps của một địa điểm (maps.app.goo.gl/…, google.com/maps/place/…)",
       "failed": "Không lấy được dữ liệu cửa hàng — vui lòng thử lại sau",
       "notFound": "Không tìm thấy cửa hàng từ link này — kiểm tra lại link có trỏ đúng một địa điểm không",
-      "offline": "Mất kết nối — kiểm tra mạng rồi thử lại"
+      "offline": "Mất kết nối — kiểm tra mạng rồi thử lại",
+      "expired": "Báo cáo này đã hết hạn hoặc không tồn tại — hãy dán link Google Maps để chẩn đoán lại."
     }
   },
   "overview": {
@@ -58,6 +59,7 @@
     "footer": "Cải thiện từng tiêu chí – Nâng tầm thương hiệu",
     "locked": "{count} tiêu chí đang bị khoá",
     "lockedCta": "Mở khoá ngay",
+    "share": "Chia sẻ", "copied": "Đã copy link", "copyLink": "Copy link", "pdf": "Tải PDF", "printLink": "Xem báo cáo trực tuyến:",
     "scrollTop": "Scroll Top"
   },
   "review": {

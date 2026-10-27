@@ -30,7 +30,9 @@ export function LocaleSwitcher() {
   function choose(next: Locale) {
     setOpen(false);
     if (next === locale) return;
-    startTransition(() => router.replace(pathname, { locale: next }));
+    // Keep the query (?r=<runId>) so a shared report stays open in the new language.
+    const query = Object.fromEntries(new URLSearchParams(location.search));
+    startTransition(() => router.replace({ pathname, query }, { locale: next }));
   }
 
   return (

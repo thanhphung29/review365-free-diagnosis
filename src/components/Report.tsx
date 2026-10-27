@@ -1,11 +1,12 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import Image from 'next/image';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { faFacebook, faLinkedin, faXTwitter } from '@fortawesome/free-brands-svg-icons';
 import {
   faArrowRight, faArrowTrendUp, faArrowUp, faArrowUpRightFromSquare, faBuilding, faCheck, faChevronRight, faCircleExclamation,
-  faCircleInfo, faClock, faImage, faInfo, faLocationDot, faLock, faNewspaper, faStar, faXmark,
+  faCircleInfo, faClock, faFilePdf, faImage, faInfo, faLink, faLocationDot, faLock, faNewspaper, faShareNodes, faStar, faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import type { Audit, Check, CheckStatus, GroupKey } from '@/lib/audit';
 import type { Locale } from '@/i18n/routing';
@@ -33,11 +34,15 @@ const ICON: Record<CheckStatus, ReactNode> = {
 };
 const isMeasured = (s: CheckStatus) => s === 'PASS' || s === 'FAIL';
 
-export function Report({ a }: { a: Audit }) {
+export function Report({ a, shareUrl }: { a: Audit; shareUrl: string | null }) {
   const t = useTranslations('overview');
   return (
     <>
-      <ReportHeader a={a} />
+      {/* Printed / PDF copies only: the brand on top of the first page. */}
+      <div className="wrap print-only print-brand">
+        <Image src="/review-365-logo-blue.png" alt="Review365" width={600} height={126} loading="eager" />
+      </div>
+      <ReportHeader a={a} shareUrl={shareUrl} />
       {/* The detail cards hang off a numbered line: each is the expansion of the matching overview group card. */}
       <div className="wrap details-tree" id="details">
         {a.groups.map((g) => {
@@ -77,6 +82,8 @@ export function Report({ a }: { a: Audit }) {
           {t('scrollTop')}
         </a>
       </div>
+      {/* Printed / PDF copies only: where to open the live report again. */}
+      {shareUrl ? <p className="wrap print-only print-link">{t('printLink')} <a href={shareUrl}>{shareUrl}</a></p> : null}
     </>
   );
 }
@@ -170,7 +177,71 @@ function Skyline() {
 }
 
 /** Report overview: the store, the overall pass / fail / locked split on a dark score panel, and a card per group. */
-function ReportHeader({ a }: { a: Audit }) {
+/** Share the report's link where people talk, copy it, or print it to PDF; beside the report time. */
+const SOCIAL = [
+  { key: 'facebook', name: 'Facebook', icon: faFacebook, href: (u: string) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(u)}` },
+  { key: 'x', name: 'X', icon: faXTwitter, href: (u: string, text: string) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(u)}&text=${encodeURIComponent(text)}` },
+  { key: 'linkedin', name: 'LinkedIn', icon: faLinkedin, href: (u: string) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(u)}` },
+];
+
+function ReportActions({ shareUrl }: { shareUrl: string | null }) {
+  const t = useTranslations('overview');
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+
+  // Close on a click outside or on Escape.
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => { if (!box.current?.contains(e.target as Node)) setOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('pointerdown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('pointerdown', onDown); document.removeEventListener('keydown', onKey); };
+  }, [open]);
+
+  async function copy() {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => { setCopied(false); setOpen(false); }, 1200);
+    } catch { /* clipboard blocked */ }
+  }
+
+  return (
+    <div className="ov-actions">
+      {shareUrl ? (
+        <div className="share" ref={box}>
+          <button type="button" className="ov-action" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+            <FontAwesomeIcon icon={faShareNodes} />{t('share')}
+          </button>
+          {open ? (
+            <ul className="share-menu" role="menu">
+              {SOCIAL.map((s) => (
+                <li key={s.key} role="none">
+                  <a role="menuitem" className={`share-${s.key}`} href={s.href(shareUrl, document.title)} target="_blank" rel="noopener" onClick={() => setOpen(false)}>
+                    <FontAwesomeIcon icon={s.icon} fixedWidth />{s.name}
+                  </a>
+                </li>
+              ))}
+              <li role="none">
+                <button type="button" role="menuitem" onClick={copy}>
+                  <FontAwesomeIcon icon={copied ? faCheck : faLink} fixedWidth />{copied ? t('copied') : t('copyLink')}
+                </button>
+              </li>
+            </ul>
+          ) : null}
+        </div>
+      ) : null}
+      <button type="button" className="ov-action" onClick={() => window.print()}>
+        <FontAwesomeIcon icon={faFilePdf} />{t('pdf')}
+      </button>
+    </div>
+  );
+}
+
+function ReportHeader({ a, shareUrl }: { a: Audit; shareUrl: string | null }) {
   const t = useTranslations('overview');
   const signupUrl = useSignupUrl();
   const format = useFormatter();
@@ -183,7 +254,10 @@ function ReportHeader({ a }: { a: Audit }) {
       <div className="wrap">
         <div className="ov-top">
           <div className="ov-store">
-            <div className="ov-time"><FontAwesomeIcon icon={faClock} /> {t('reportedAt')} <b>{fmtTime(a.scraped || a.ref)}</b></div>
+            <div className="ov-meta">
+              <div className="ov-time"><FontAwesomeIcon icon={faClock} /> {t('reportedAt')} <b>{fmtTime(a.scraped || a.ref)}</b></div>
+              <ReportActions shareUrl={shareUrl} />
+            </div>
             <h1 className="store">
               <span className="store-lead">{t('lead')}</span>
               <span className="store-id">

@@ -69,6 +69,19 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 .overview { position: relative; margin-bottom: 32px; padding: 28px 0 32px; }
 .ov-top { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 32px; align-items: center; }
 .ov-store { position: relative; padding: 8px 0 24px; }
+.ov-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; }
+.ov-actions { display: flex; gap: 8px; }
+.ov-action { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid var(--border); border-radius: 999px; background: rgba(255, 255, 255, .85); color: var(--brand); font: inherit; font-size: var(--fs-sm); font-weight: 500; cursor: pointer; transition: border-color .2s, background .2s; }
+.ov-action:hover { border-color: var(--brand); background: #fff; }
+.ov-action svg { font-size: 13px; color: var(--teal); }
+.share { position: relative; }
+.share-menu { position: absolute; z-index: 5; top: calc(100% + 8px); left: 0; min-width: 200px; margin: 0; padding: 6px; list-style: none; border: 1px solid var(--border); border-radius: 14px; background: var(--card); box-shadow: 0 12px 32px rgba(15, 47, 45, .14); }
+.share-menu :is(a, button) { width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 10px; border: 0; border-radius: 10px; background: none; color: var(--fg); font: inherit; font-size: var(--fs-sm); text-align: left; text-decoration: none; cursor: pointer; }
+.share-menu :is(a, button):hover { background: var(--surface); }
+.share-menu svg { font-size: 16px; color: var(--muted); }
+.share-facebook svg { color: #1877f2; }
+.share-x svg { color: #000; }
+.share-linkedin svg { color: #0a66c2; }
 .ov-time { display: inline-flex; align-items: center; gap: 8px; font-size: var(--fs-sm); color: var(--muted); }
 .ov-time svg { color: #8a9a99; }
 .ov-time b { color: var(--fg); font-weight: 500; }
@@ -400,4 +413,29 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 @media (max-width: 640px) {
   .reviews-summary { grid-template-columns: 1fr; padding: 16px; }
   .rs-score { padding: 0 0 14px; border-right: 0; border-bottom: 1px solid var(--border); }
+}
+
+/* ---- print / "Tải PDF": the report alone on A4, colours kept, cards never split across pages ---- */
+.print-only { display: none; }
+@page { size: A4; margin: 12mm; }
+@media print {
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html { scroll-behavior: auto; }
+  body { background: #fff; }
+  .hero, .ov-actions, .ov-all, .ov-groups-foot, .to-top, .results::before { display: none !important; }
+  .results { min-height: 0; padding: 0; background: #fff; }
+  .wrap { max-width: none; padding: 0; }
+  .details-tree { padding-left: 56px; }
+  .overview { margin-bottom: 16px; padding-top: 0; }
+  .ov-top { grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; }
+  .ov-score, .ov-group, .item, .locked-zone, .reviews-summary, .tree-head { break-inside: avoid; }
+  .tree-head { break-after: avoid; padding: 10px 0; margin-bottom: 2px; }
+  .print-only { display: block; }
+  /* Chrome prints soft shadows as solid boxes; the CTAs' hover wave layer has no use on paper */
+  *, *::before, *::after { box-shadow: none !important; }
+  .cta::before { display: none; }
+  .print-brand { padding-bottom: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .print-brand img { display: block; width: 150px; height: auto; }
+  .print-link { margin: 24px 0 0; padding-top: 12px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }
+  .print-link a { color: var(--teal); word-break: break-all; }
 }

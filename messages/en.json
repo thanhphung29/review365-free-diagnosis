@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Google Business Profile report",
-    "description": "Check a Google Business Profile against the REVIEW365 checklist",
+    "title": "Review: Google Business Profile report",
+    "description": "Check a Google Business Profile with Review365",
     "reportTitle": "Review365: Google Maps health check for {name}"
   },
   "lang": {
@@ -28,7 +28,8 @@
       "invalidLink": "That link doesn't look right — we need the Google Maps link of a single place (maps.app.goo.gl/…, google.com/maps/place/…)",
       "failed": "We couldn't fetch the store's data — please try again later",
       "notFound": "No store found for this link — check that it points to a single place",
-      "offline": "Connection lost — check your network and try again"
+      "offline": "Connection lost — check your network and try again",
+      "expired": "This report has expired or does not exist — paste a Google Maps link to run the diagnosis again."
     }
   },
   "overview": {
@@ -58,6 +59,7 @@
     "footer": "Improve each criterion – lift your brand",
     "locked": "{count, plural, one {# locked criterion} other {# locked criteria}}",
     "lockedCta": "Unlock now",
+    "share": "Share", "copied": "Link copied", "copyLink": "Copy link", "pdf": "Download PDF", "printLink": "View this report online:",
     "scrollTop": "Scroll Top"
   },
   "review": {

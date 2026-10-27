@@ -17,6 +17,22 @@ const POLL_RETRIES = 3;
 
 /** The last report, so switching language (a new /[locale] page) brings it straight back. */
 const LAST_KEY = 'r365:last';
+/** Apify run id, the same shape the API route accepts. */
+const RUN_ID = /^[A-Za-z0-9]{8,32}$/;
+
+/** The report's own address: this page with ?r=<runId>, which reopens the same crawl. */
+const shareUrlFor = (runId: string) => {
+  const url = new URL(location.href);
+  url.searchParams.set('r', runId);
+  return url.href;
+};
+/** Shows (or drops) ?r= in the address bar without a navigation. */
+function setRunInUrl(runId: string | null) {
+  const url = new URL(location.href);
+  if (runId) url.searchParams.set('r', runId);
+  else url.searchParams.delete('r');
+  history.replaceState(history.state, '', url);
+}
 
 /** Errors thrown while crawling carry a message key (search.errors.*), worded in the user's language when shown. */
 class CrawlError extends Error {}
@@ -33,6 +49,8 @@ async function api<T>(input: string, init: RequestInit = {}): Promise<T> {
   const body = (await res.json().catch(() => null)) as (T & { error?: string }) | null;
   if (!res.ok) {
     if (res.status === 400 || res.status === 422) throw new CrawlError('invalidLink');
+    // Unknown run, or one Apify has already deleted: a shared link that has expired.
+    if (res.status === 404) throw new CrawlError('expired');
     console.error('[crawl]', res.status, body?.error);
     throw new CrawlError('failed');
   }
@@ -45,6 +63,37 @@ const wait = (ms: number, signal: AbortSignal) =>
     const t = setTimeout(resolve, ms);
     signal.addEventListener('abort', () => { clearTimeout(t); resolve(); }, { once: true });
   });
+
+/**
+ * Follows a run until it ends and returns the crawled place, or null if aborted.
+ * `first` asks straight away (a shared link, usually long finished); a fresh run waits a poll first.
+ */
+async function followRun(runId: string, signal: AbortSignal, first = false): Promise<Place | null> {
+  const startedAt = Date.now();
+  let failures = 0;
+  for (let i = 0; ; i++) {
+    if (i > 0 || !first) await wait(POLL_MS, signal);
+    if (signal.aborted) return null;
+    if (Date.now() - startedAt > POLL_LIMIT_MS) throw new CrawlError('failed');
+
+    let run: { done: boolean; status: string; items?: unknown[] };
+    try {
+      run = await api(`/api/crawl/${runId}`, { signal });
+      failures = 0;
+    } catch (err) {
+      // A dropped connection is retried; an error the server reports is not.
+      if (signal.aborted) return null;
+      if (err instanceof TypeError && ++failures < POLL_RETRIES) continue;
+      throw err;
+    }
+    if (!run.done) continue;
+    if (run.status !== 'SUCCEEDED') throw new CrawlError('failed');
+
+    const found = (run.items ?? []).find(isPlace);
+    if (!found) throw new CrawlError('notFound');
+    return found;
+  }
+}
 
 /** Types and erases each line in turn, while `on`; reduced-motion users get the first line, still. */
 function useTypewriter(lines: readonly string[], on: boolean): string {
@@ -79,6 +128,8 @@ export function ReportApp() {
   const [error, setError] = useState<string | null>(null);
   /** The link behind the report on screen; searching it again would only repeat the crawl. */
   const [reportedLink, setReportedLink] = useState<string | null>(null);
+  /** Address that reopens the report on screen (?r=<runId>); null until a run has finished. */
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
   const abort = useRef<AbortController | null>(null);
   // A stable array, so the typewriter only restarts when the language changes.
   const placeholders = useMemo(() => t.raw('search.placeholders') as string[], [t]);
@@ -90,13 +141,44 @@ export function ReportApp() {
   useEffect(() => () => abort.current?.abort(), []);
   useEffect(() => { document.title = report ? t('meta.reportTitle', { name: report.name }) : t('meta.title'); }, [report, t]);
 
-  // Bring back the report shown before a language switch (or a reload in this tab).
+  // Open the report named by ?r= (a shared link), or bring back the one shown before a
+  // language switch or a reload in this tab.
   useEffect(() => {
-    let saved: { link: string; place: Place } | null = null;
+    let saved: { link: string; place: Place; runId?: string } | null = null;
     try { saved = JSON.parse(sessionStorage.getItem(LAST_KEY) || 'null'); } catch { /* storage unavailable */ }
-    if (!saved?.place) return;
-    const { link: savedLink, place: savedPlace } = saved;
-    queueMicrotask(() => { setLink(savedLink); setReportedLink(savedLink); setPlace(savedPlace); });
+    const r = new URLSearchParams(location.search).get('r');
+    const shared = r && RUN_ID.test(r) ? r : null;
+
+    if (saved?.place && (!shared || saved.runId === shared)) {
+      const { link: savedLink, place: savedPlace, runId } = saved;
+      queueMicrotask(() => {
+        setLink(savedLink); setReportedLink(savedLink); setPlace(savedPlace);
+        if (runId) { setShareUrl(shareUrlFor(runId)); setRunInUrl(runId); }
+      });
+      return;
+    }
+    if (!shared) return;
+
+    // Someone else's report: one read of the finished run, no new crawl.
+    const ctrl = new AbortController();
+    abort.current = ctrl;
+    queueMicrotask(() => setRunning(true));
+    followRun(shared, ctrl.signal, true)
+      .then((found) => {
+        if (!found) return;
+        setPlace(found);
+        setShareUrl(shareUrlFor(shared));
+        try { sessionStorage.setItem(LAST_KEY, JSON.stringify({ link: '', place: found, runId: shared })); } catch { /* storage full or blocked */ }
+      })
+      .catch((err) => {
+        if (ctrl.signal.aborted) return;
+        setRunInUrl(null);
+        setError(err instanceof TypeError ? 'offline' : err instanceof CrawlError ? err.message : 'failed');
+      })
+      .finally(() => {
+        if (abort.current === ctrl) abort.current = null;
+        if (!ctrl.signal.aborted) setRunning(false);
+      });
   }, []);
 
   async function onSubmit(e: FormEvent) {
@@ -107,11 +189,13 @@ export function ReportApp() {
     setLinkError(null);
     setError(null);
     setRunning(true);
+    setShareUrl(null);
+    setRunInUrl(null);
 
+    abort.current?.abort();
     const ctrl = new AbortController();
     abort.current = ctrl;
     const { signal } = ctrl;
-    const startedAt = Date.now();
 
     try {
       const { runId } = await api<{ runId: string }>('/api/crawl', {
@@ -121,32 +205,13 @@ export function ReportApp() {
         signal,
       });
 
-      let failures = 0;
-      for (;;) {
-        await wait(POLL_MS, signal);
-        if (signal.aborted) return;
-        if (Date.now() - startedAt > POLL_LIMIT_MS) throw new CrawlError('failed');
-
-        let run: { done: boolean; status: string; items?: unknown[] };
-        try {
-          run = await api(`/api/crawl/${runId}`, { signal });
-          failures = 0;
-        } catch (err) {
-          // A dropped connection is retried; an error the server reports is not.
-          if (signal.aborted) return;
-          if (err instanceof TypeError && ++failures < POLL_RETRIES) continue;
-          throw err;
-        }
-        if (!run.done) continue;
-        if (run.status !== 'SUCCEEDED') throw new CrawlError('failed');
-
-        const found = (run.items ?? []).find(isPlace);
-        if (!found) throw new CrawlError('notFound');
-        setPlace(found);
-        setReportedLink(target);
-        try { sessionStorage.setItem(LAST_KEY, JSON.stringify({ link: target, place: found })); } catch { /* storage full or blocked */ }
-        return;
-      }
+      const found = await followRun(runId, signal);
+      if (!found) return;
+      setPlace(found);
+      setReportedLink(target);
+      setShareUrl(shareUrlFor(runId));
+      setRunInUrl(runId);
+      try { sessionStorage.setItem(LAST_KEY, JSON.stringify({ link: target, place: found, runId })); } catch { /* storage full or blocked */ }
     } catch (err) {
       if (signal.aborted) return;
       setError(err instanceof TypeError ? 'offline' : err instanceof CrawlError ? err.message : 'failed');
@@ -219,7 +284,7 @@ export function ReportApp() {
 
       {running || report ? (
         <main className="results">
-          {running ? <Skeleton /> : report ? <Report a={report} /> : null}
+          {running ? <Skeleton /> : report ? <Report a={report} shareUrl={shareUrl} /> : null}
         </main>
       ) : null}
     </div>

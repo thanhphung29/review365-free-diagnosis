@@ -20,7 +20,6 @@ interface ApifyRun {
   defaultDatasetId: string;
   startedAt?: string;
   finishedAt?: string | null;
-  usageTotalUsd?: number;
 }
 
 /**
@@ -76,14 +75,12 @@ export interface RunView {
   runId: string;
   status: string;
   done: boolean;
-  usageUsd: number | null;
 }
 
 const view = (run: ApifyRun): RunView => ({
   runId: run.id,
   status: run.status,
   done: TERMINAL.has(run.status),
-  usageUsd: run.usageTotalUsd ?? null,
 });
 
 export async function startRun(token: string, target: Exclude<MapsTarget, { kind: 'short' }>): Promise<RunView> {

@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Googleビジネスプロフィール診断レポート",
-    "description": "REVIEW365のチェックリストでGoogleビジネスプロフィールを診断します",
+    "title": "Review: Googleビジネスプロフィール診断レポート",
+    "description": "Review365でGoogleビジネスプロフィールを診断します",
     "reportTitle": "Review365：{name} のGoogleマップ健康診断レポート"
   },
   "lang": {
@@ -28,7 +28,8 @@
       "invalidLink": "リンクが正しくありません。1つの場所を示すGoogleマップのリンクが必要です（maps.app.goo.gl/…、google.com/maps/place/…）",
       "failed": "お店のデータを取得できませんでした。しばらくしてからもう一度お試しください",
       "notFound": "このリンクからお店が見つかりませんでした。1つの場所を示すリンクか確認してください",
-      "offline": "接続が切れました。ネットワークを確認して、もう一度お試しください"
+      "offline": "接続が切れました。ネットワークを確認して、もう一度お試しください",
+      "expired": "このレポートは期限切れか存在しません。Googleマップのリンクを貼り付けて、もう一度診断してください。"
     }
   },
   "overview": {
@@ -58,6 +59,7 @@
     "footer": "一つひとつの項目を改善して、ブランド力を高めましょう",
     "locked": "{count}項目がロック中",
     "lockedCta": "今すぐロック解除",
+    "share": "共有", "copied": "リンクをコピーしました", "copyLink": "リンクをコピー", "pdf": "PDFをダウンロード", "printLink": "オンラインでレポートを見る：",
     "scrollTop": "Scroll Top"
   },
   "review": {
