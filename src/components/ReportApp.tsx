@@ -4,8 +4,8 @@ import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { CHECK_KEYS, audit, type Place, type Translate } from '@/lib/audit';
+import { faCheck, faStethoscope } from '@fortawesome/free-solid-svg-icons';
+import { audit, type Place, type Translate } from '@/lib/audit';
 import { parseMapsTarget } from '@/lib/maps-link';
 import { LocaleSwitcher } from './LocaleSwitcher';
 import { Report } from './Report';
@@ -15,7 +15,7 @@ const POLL_LIMIT_MS = 10 * 60_000;
 /** Consecutive network failures tolerated while polling before giving up. */
 const POLL_RETRIES = 3;
 
-/** The last report, so switching language (a new /[locale] page) brings it straight back. */
+/** The last report with its runId, so reopening the same ?r= (reload, language switch) needs no fetch. */
 const LAST_KEY = 'r365:last';
 /** Apify run id, the same shape the API route accepts. */
 const RUN_ID = /^[A-Za-z0-9]{8,32}$/;
@@ -141,23 +141,23 @@ export function ReportApp() {
   useEffect(() => () => abort.current?.abort(), []);
   useEffect(() => { document.title = report ? t('meta.reportTitle', { name: report.name }) : t('meta.title'); }, [report, t]);
 
-  // Open the report named by ?r= (a shared link), or bring back the one shown before a
-  // language switch or a reload in this tab.
+  // The report on screen is the one named by ?r=<runId>; without it the page starts empty.
+  // The copy kept in this tab saves a fetch when ?r= is the report just shown (reload, language switch).
   useEffect(() => {
-    let saved: { link: string; place: Place; runId?: string } | null = null;
-    try { saved = JSON.parse(sessionStorage.getItem(LAST_KEY) || 'null'); } catch { /* storage unavailable */ }
     const r = new URLSearchParams(location.search).get('r');
     const shared = r && RUN_ID.test(r) ? r : null;
+    if (!shared) return;
 
-    if (saved?.place && (!shared || saved.runId === shared)) {
-      const { link: savedLink, place: savedPlace, runId } = saved;
+    let saved: { link: string; place: Place; runId?: string } | null = null;
+    try { saved = JSON.parse(sessionStorage.getItem(LAST_KEY) || 'null'); } catch { /* storage unavailable */ }
+    if (saved?.place && saved.runId === shared) {
+      const { link: savedLink, place: savedPlace } = saved;
       queueMicrotask(() => {
         setLink(savedLink); setReportedLink(savedLink); setPlace(savedPlace);
-        if (runId) { setShareUrl(shareUrlFor(runId)); setRunInUrl(runId); }
+        setShareUrl(shareUrlFor(shared));
       });
       return;
     }
-    if (!shared) return;
 
     // Someone else's report: one read of the finished run, no new crawl.
     const ctrl = new AbortController();
@@ -257,7 +257,7 @@ export function ReportApp() {
               disabled={running}
             />
             <button type="submit" className="go" disabled={running || !link.trim() || link.trim() === reportedLink}>
-              {running ? <span className="spinner" aria-hidden="true" /> : <FontAwesomeIcon icon={faMagnifyingGlass} />}
+              {running ? <span className="spinner" aria-hidden="true" /> : <FontAwesomeIcon icon={faStethoscope} />}
               <span className="label">{running ? t('search.running') : t('search.submit')}</span>
             </button>
           </div>
@@ -268,7 +268,7 @@ export function ReportApp() {
               <ul className="perks">
                 <li><FontAwesomeIcon icon={faCheck} />{t('search.perkNoLogin')}</li>
                 <li><FontAwesomeIcon icon={faCheck} />{t('search.perkNoInstall')}</li>
-                <li><FontAwesomeIcon icon={faCheck} />{t('search.perkCriteria', { count: CHECK_KEYS.length })}</li>
+                <li><FontAwesomeIcon icon={faCheck} />{t('search.perkCriteria')}</li>
               </ul>
               <details className="howto">
                 <summary>{t('search.howtoSummary')}</summary>
