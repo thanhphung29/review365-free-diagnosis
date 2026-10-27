@@ -178,11 +178,14 @@ function Skyline() {
 
 /** Report overview: the store, the overall pass / fail / locked split on a dark score panel, and a card per group. */
 /** Share the report's link where people talk, copy it, or print it to PDF; beside the report time. */
+// `sheet`: on phones the Facebook / LinkedIn apps catch these links and open on their home feed, dropping
+// the link; the system share sheet hands the link to the app properly instead.
 const SOCIAL = [
-  { key: 'facebook', name: 'Facebook', icon: faFacebook, href: (u: string) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(u)}` },
-  { key: 'x', name: 'X', icon: faXTwitter, href: (u: string, text: string) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(u)}&text=${encodeURIComponent(text)}` },
-  { key: 'linkedin', name: 'LinkedIn', icon: faLinkedin, href: (u: string) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(u)}` },
+  { key: 'facebook', name: 'Facebook', icon: faFacebook, sheet: true, href: (u: string) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(u)}` },
+  { key: 'x', name: 'X', icon: faXTwitter, sheet: false, href: (u: string, text: string) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(u)}&text=${encodeURIComponent(text)}` },
+  { key: 'linkedin', name: 'LinkedIn', icon: faLinkedin, sheet: true, href: (u: string) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(u)}` },
 ];
+const isPhone = () => matchMedia('(pointer: coarse)').matches && typeof navigator.share === 'function';
 
 function ReportActions({ shareUrl }: { shareUrl: string | null }) {
   const t = useTranslations('overview');
@@ -220,7 +223,13 @@ function ReportActions({ shareUrl }: { shareUrl: string | null }) {
             <ul className="share-menu" role="menu">
               {SOCIAL.map((s) => (
                 <li key={s.key} role="none">
-                  <a role="menuitem" className={`share-${s.key}`} href={s.href(shareUrl, document.title)} target="_blank" rel="noopener" onClick={() => setOpen(false)}>
+                  <a role="menuitem" className={`share-${s.key}`} href={s.href(shareUrl, document.title)} target="_blank" rel="noopener"
+                    onClick={(e) => {
+                      setOpen(false);
+                      if (!s.sheet || !isPhone()) return;
+                      e.preventDefault();
+                      navigator.share({ title: document.title, url: shareUrl }).catch(() => { /* dismissed */ });
+                    }}>
                     <FontAwesomeIcon icon={s.icon} fixedWidth />{s.name}
                   </a>
                 </li>
