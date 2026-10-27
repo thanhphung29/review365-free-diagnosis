@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { useFormatter, useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { useFormatter, useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -7,8 +8,15 @@ import {
   faCircleInfo, faClock, faImage, faInfo, faLocationDot, faLock, faNewspaper, faStar, faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import type { Audit, Check, CheckStatus, GroupKey } from '@/lib/audit';
+import type { Locale } from '@/i18n/routing';
 
-const SIGNUP_URL = process.env.NEXT_PUBLIC_SIGNUP_URL || 'https://review365.vn/#contact';
+// Sign-up page in the visitor's language, linked from the locked checks' CTA.
+const SIGNUP_URL: Record<Locale, string> = {
+  vi: 'https://meo-tools.com/users/sign_up?agency=1i16qi24&locale=vi',
+  en: 'https://meo-tools.com/users/sign_up?agency=1i16qi24&locale=en',
+  ja: 'https://meo-tools.com/users/sign_up?agency=1i16qi24&locale=ja',
+};
+const useSignupUrl = () => SIGNUP_URL[useLocale() as Locale];
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const fmtTime = (d: Date) => `${pad(d.getHours())}:${pad(d.getMinutes())} · ${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
@@ -84,6 +92,7 @@ function LockedZone({ checks }: { checks: Check[] }) {
           <b>{t('locked', { count: checks.length })}</b>
           <ul className="lz-titles">{checks.map((c) => <li key={c.key}>{c.title}</li>)}</ul>
         </div>
+        <a className="cta" href={useSignupUrl()} target="_blank" rel="noopener">{t('lockedCta')}</a>
       </div>
     </div>
   );
@@ -163,6 +172,7 @@ function Skyline() {
 /** Report overview: the store, the overall pass / fail / locked split on a dark score panel, and a card per group. */
 function ReportHeader({ a }: { a: Audit }) {
   const t = useTranslations('overview');
+  const signupUrl = useSignupUrl();
   const format = useFormatter();
   const all = a.groups.flatMap((g) => g.checks);
   const counts = tally(all);
@@ -202,13 +212,13 @@ function ReportHeader({ a }: { a: Audit }) {
             <div className="unlock ov-unlock">
               <span className="ov-unlock-ic"><FontAwesomeIcon icon={faLock} /></span>
               <p>{t('unlockText')}</p>
-              <a className="cta" href={SIGNUP_URL} target="_blank" rel="noopener">{t('unlockCta')}</a>
+              <a className="cta" href={signupUrl} target="_blank" rel="noopener">{t('unlockCta')}</a>
             </div>
           </div>
 
           <div className="ov-score">
             <p className="ov-note" aria-hidden="true">
-              {t.rich('note', { br: () => <br /> })}
+              <Image src="/review-365-logo.png" alt="" width={2400} height={502} className="ov-note-logo" />
               <svg viewBox="0 0 60 40"><path d="M50 4c4 16-6 30-36 30m0 0 8-7m-8 7 9 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </p>
             <Donut counts={counts} total={all.length} />
@@ -218,7 +228,7 @@ function ReportHeader({ a }: { a: Audit }) {
                 const locked = key === 'locked';
                 return (
                   <li key={key}>
-                    <a className={`ov-row ${key}`} href={locked ? SIGNUP_URL : '#details'} {...(locked ? { target: '_blank', rel: 'noopener' } : {})}>
+                    <a className={`ov-row ${key}`} href={locked ? signupUrl : '#details'} {...(locked ? { target: '_blank', rel: 'noopener' } : {})}>
                       <span className="ov-row-ic"><FontAwesomeIcon icon={PART_ICON[key]} /></span>
                       <span className="ov-row-text">
                         <b>{t(`parts.${key}`)}</b>
@@ -314,9 +324,9 @@ function ReviewSummary({ a, dist }: { a: Audit; dist: number[] }) {
       </ul>
 
       <div className="rs-insights">
-        <div><b>{positive}%</b><span>{t('positive')}</span></div>
-        <div><b>{pct(dist[2])}%</b><span>{t('neutral')}</span></div>
-        <div><b>{negative}%</b><span>{t('negative')}</span></div>
+        <div><b>{positive}%</b><span>{t('positive.label')} <span>{t('positive.stars')}</span></span></div>
+        <div><b>{pct(dist[2])}%</b><span>{t('neutral.label')} <span>{t('neutral.stars')}</span></span></div>
+        <div><b>{negative}%</b><span>{t('negative.label')} <span>{t('negative.stars')}</span></span></div>
       </div>
     </div>
   );

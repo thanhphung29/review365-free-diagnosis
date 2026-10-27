@@ -39,7 +39,6 @@
     "lede": "How complete the business's Google Maps profile is, with suggestions to improve visibility and win more customers.",
     "unlockText": "Sign up for a Review365 account to see the full diagnosis report!",
     "unlockCta": "Sign up now",
-    "note": "Plenty of<br></br>potential!",
     "scoreLabel": "criteria passed",
     "parts": { "pass": "Passed", "fail": "Failed", "locked": "Locked" },
     "partShare": "{pct}% of criteria",
@@ -58,6 +57,7 @@
     },
     "footer": "Improve each criterion – lift your brand",
     "locked": "{count, plural, one {# locked criterion} other {# locked criteria}}",
+    "lockedCta": "Unlock now",
     "scrollTop": "Scroll Top"
   },
   "review": {
@@ -66,9 +66,9 @@
     "total": "{count, plural, one {# review} other {# reviews}}",
     "distLabel": "Reviews by star rating",
     "tip": "{stars} stars: {count} reviews ({pct}%)",
-    "positive": "positive (4–5 stars)",
-    "neutral": "neutral (3 stars)",
-    "negative": "negative (1–2 stars)"
+    "positive": { "label": "positive", "stars": "(4–5 stars)" },
+    "neutral": { "label": "neutral", "stars": "(3 stars)" },
+    "negative": { "label": "negative", "stars": "(1–2 stars)" }
   },
   "groups": {
     "basic": "Basic information",

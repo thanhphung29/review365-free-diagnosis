@@ -39,7 +39,6 @@
     "lede": "お店のGoogleマップのプロフィールの完成度を評価し、表示機会と集客を増やすための改善点をご提案します。",
     "unlockText": "診断レポートをすべて見るには、今すぐReview365に登録してください！",
     "unlockCta": "今すぐ登録",
-    "note": "まだまだ<br></br>伸びしろあり！",
     "scoreLabel": "項目が合格",
     "parts": { "pass": "合格", "fail": "不合格", "locked": "ロック中" },
     "partShare": "全項目の{pct}%",
@@ -58,6 +57,7 @@
     },
     "footer": "一つひとつの項目を改善して、ブランド力を高めましょう",
     "locked": "{count}項目がロック中",
+    "lockedCta": "今すぐロック解除",
     "scrollTop": "Scroll Top"
   },
   "review": {
@@ -66,9 +66,9 @@
     "total": "{count}件のクチコミ",
     "distLabel": "星の数ごとのクチコミ分布",
     "tip": "星{stars}：{count}件（{pct}%）",
-    "positive": "好意的（星4〜5）",
-    "neutral": "普通（星3）",
-    "negative": "否定的（星1〜2）"
+    "positive": { "label": "好意的", "stars": "（星4〜5）" },
+    "neutral": { "label": "普通", "stars": "（星3）" },
+    "negative": { "label": "否定的", "stars": "（星1〜2）" }
   },
   "groups": {
     "basic": "基本情報",

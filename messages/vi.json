@@ -39,7 +39,6 @@
     "lede": "Đánh giá mức độ hoàn thiện hồ sơ Google Maps của doanh nghiệp và gợi ý cải thiện để tăng khả năng hiển thị, thu hút khách hàng.",
     "unlockText": "Để xem đầy đủ báo cáo chẩn đoán, hãy đăng ký tài khoản Review365 ngay!",
     "unlockCta": "Đăng ký ngay",
-    "note": "Còn nhiều<br></br>tiềm năng!",
     "scoreLabel": "tiêu chí đạt",
     "parts": { "pass": "Đạt", "fail": "Không đạt", "locked": "Bị khoá" },
     "partShare": "{pct}% tiêu chí",
@@ -58,6 +57,7 @@
     },
     "footer": "Cải thiện từng tiêu chí – Nâng tầm thương hiệu",
     "locked": "{count} tiêu chí đang bị khoá",
+    "lockedCta": "Mở khoá ngay",
     "scrollTop": "Scroll Top"
   },
   "review": {
@@ -66,9 +66,9 @@
     "total": "{count} đánh giá",
     "distLabel": "Phân bố đánh giá theo số sao",
     "tip": "{stars} sao: {count} đánh giá ({pct}%)",
-    "positive": "tích cực (4–5 sao)",
-    "neutral": "trung lập (3 sao)",
-    "negative": "tiêu cực (1–2 sao)"
+    "positive": { "label": "tích cực", "stars": "(4–5 sao)" },
+    "neutral": { "label": "trung lập", "stars": "(3 sao)" },
+    "negative": { "label": "tiêu cực", "stars": "(1–2 sao)" }
   },
   "groups": {
     "basic": "Thông tin cơ bản",
