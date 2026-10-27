@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useFormatter, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -25,6 +26,7 @@ const ICON: Record<CheckStatus, ReactNode> = {
 const isMeasured = (s: CheckStatus) => s === 'PASS' || s === 'FAIL';
 
 export function Report({ a }: { a: Audit }) {
+  const t = useTranslations('overview');
   return (
     <>
       <ReportHeader a={a} />
@@ -46,7 +48,7 @@ export function Report({ a }: { a: Audit }) {
                 <div className="tree-title">
                   <h2>{g.name}</h2>
                 </div>
-                <div className="ov-group-count"><b>{gt.pass}</b>/{g.checks.length} <small>đạt</small></div>
+                <div className="ov-group-count"><b>{gt.pass}</b>/{g.checks.length} <small>{t('passed')}</small></div>
               </header>
               <div className={`card group-${g.key}`}>
                 {g.key === 'reviews' && a.dist ? <ReviewSummary a={a} dist={a.dist} /> : null}
@@ -64,7 +66,7 @@ export function Report({ a }: { a: Audit }) {
       <div className="wrap to-top">
         <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
           <span className="to-top-ic"><FontAwesomeIcon icon={faArrowUp} /></span>
-          Scroll Top
+          {t('scrollTop')}
         </a>
       </div>
     </>
@@ -73,12 +75,13 @@ export function Report({ a }: { a: Audit }) {
 
 /** A group's locked checks in one clearly-locked block. */
 function LockedZone({ checks }: { checks: Check[] }) {
+  const t = useTranslations('overview');
   return (
     <div className="locked-zone">
       <div className="lz-head">
         {LOCK}
         <div className="lz-text">
-          <b>{checks.length} tiêu chí đang bị khoá</b>
+          <b>{t('locked', { count: checks.length })}</b>
           <ul className="lz-titles">{checks.map((c) => <li key={c.key}>{c.title}</li>)}</ul>
         </div>
       </div>
@@ -87,11 +90,7 @@ function LockedZone({ checks }: { checks: Check[] }) {
 }
 
 type PartKey = 'pass' | 'fail' | 'locked';
-const PARTS: { key: PartKey; label: string }[] = [
-  { key: 'pass', label: 'Đạt' },
-  { key: 'fail', label: 'Không đạt' },
-  { key: 'locked', label: 'Bị khoá' },
-];
+const PARTS: PartKey[] = ['pass', 'fail', 'locked'];
 
 /** Pass / fail / locked counts over a set of checks. */
 function tally(checks: Check[]): Record<PartKey, number> {
@@ -109,12 +108,13 @@ const STROKE = 6;
 const GAP = 6 + STROKE;
 
 /** Glowing part-to-whole ring on the dark score panel; the pass count sits in a glass disc in the middle. */
-function Donut({ t, total }: { t: Record<PartKey, number>; total: number }) {
-  const shown = PARTS.filter((p) => t[p.key] > 0);
-  const lens = shown.map((p) => (t[p.key] / total) * C);
-  const arcs = shown.map((p, i) => ({ ...p, len: lens[i], offset: lens.slice(0, i).reduce((x, y) => x + y, 0) }));
+function Donut({ counts, total }: { counts: Record<PartKey, number>; total: number }) {
+  const t = useTranslations('overview');
+  const shown = PARTS.filter((key) => counts[key] > 0);
+  const lens = shown.map((key) => (counts[key] / total) * C);
+  const arcs = shown.map((key, i) => ({ key, label: t(`parts.${key}`), len: lens[i], offset: lens.slice(0, i).reduce((x, y) => x + y, 0) }));
   return (
-    <svg className="donut" viewBox="0 0 200 200" role="img" aria-label={PARTS.map((p) => `${p.label}: ${t[p.key]}`).join(', ')}>
+    <svg className="donut" viewBox="0 0 200 200" role="img" aria-label={PARTS.map((key) => `${t(`parts.${key}`)}: ${counts[key]}`).join(', ')}>
       <defs>
         <linearGradient id="arc-pass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#a7f3c4" /><stop offset="1" stopColor="#34d17a" /></linearGradient>
         <linearGradient id="arc-fail" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#ef8a78" /><stop offset="1" stopColor="#d4604f" /></linearGradient>
@@ -125,37 +125,25 @@ function Donut({ t, total }: { t: Record<PartKey, number>; total: number }) {
         {arcs.map((p) => (
           <circle key={p.key} className={`arc ${p.key}`} cx="100" cy="100" r={R} fill="none" strokeWidth={STROKE} strokeLinecap="round"
             strokeDasharray={`${Math.max(p.len - GAP, 1)} ${C}`} strokeDashoffset={-p.offset}>
-            <title>{`${p.label}: ${t[p.key]} tiêu chí`}</title>
+            <title>{t('partTitle', { label: p.label, count: counts[p.key] })}</title>
           </circle>
         ))}
       </g>
       <circle cx="100" cy="100" r="64" fill="url(#glass)" stroke="rgba(160, 150, 80, .3)" strokeWidth=".75" />
-      <text x="100" y="104" textAnchor="middle" className="donut-num">{t.pass}<tspan className="donut-of" dx="2">/{total}</tspan></text>
-      <text x="100" y="128" textAnchor="middle" className="donut-label">tiêu chí đạt</text>
+      <text x="100" y="104" textAnchor="middle" className="donut-num">{counts.pass}<tspan className="donut-of" dx="2">/{total}</tspan></text>
+      <text x="100" y="128" textAnchor="middle" className="donut-label">{t('scoreLabel')}</text>
     </svg>
   );
 }
 
 type Tone = 'done' | 'good' | 'warn' | 'bad';
-const TONE: Record<Tone, { label: string; icon: IconDefinition }> = {
-  done: { label: 'Hoàn thiện', icon: faCheck },
-  good: { label: 'Đang cải thiện', icon: faCheck },
-  warn: { label: 'Cần cải thiện', icon: faCircleExclamation },
-  bad: { label: 'Cần ưu tiên', icon: faXmark },
-};
+const TONE_ICON: Record<Tone, IconDefinition> = { done: faCheck, good: faCheck, warn: faCircleExclamation, bad: faXmark };
 /** How a group is doing: nothing failed reads as on track, all-failed as the priority. */
-function toneOf(t: Record<PartKey, number>, total: number): Tone {
-  if (t.pass === total) return 'done';
-  if (!t.fail) return 'good';
-  return t.pass ? 'warn' : 'bad';
+function toneOf(counts: Record<PartKey, number>, total: number): Tone {
+  if (counts.pass === total) return 'done';
+  if (!counts.fail) return 'good';
+  return counts.pass ? 'warn' : 'bad';
 }
-
-const GROUP_BLURB: Record<GroupKey, string> = {
-  basic: 'Đầy đủ và chính xác các thông tin cơ bản của doanh nghiệp.',
-  posts: 'Tăng tương tác và cập nhật thông tin thường xuyên.',
-  photos: 'Hình ảnh chất lượng, rõ nét, đa dạng và đúng quy định.',
-  reviews: 'Tăng số lượng và cải thiện chất lượng đánh giá.',
-};
 
 /** Line-drawn skyline with a pin, closing the groups panel. */
 function Skyline() {
@@ -174,8 +162,10 @@ function Skyline() {
 
 /** Report overview: the store, the overall pass / fail / locked split on a dark score panel, and a card per group. */
 function ReportHeader({ a }: { a: Audit }) {
+  const t = useTranslations('overview');
+  const format = useFormatter();
   const all = a.groups.flatMap((g) => g.checks);
-  const t = tally(all);
+  const counts = tally(all);
   const [first, ...rest] = a.name.trim().split(/\s+/);
 
   return (
@@ -183,16 +173,16 @@ function ReportHeader({ a }: { a: Audit }) {
       <div className="wrap">
         <div className="ov-top">
           <div className="ov-store">
-            <div className="ov-time"><FontAwesomeIcon icon={faClock} /> Báo cáo lúc <b>{fmtTime(a.scraped || a.ref)}</b></div>
+            <div className="ov-time"><FontAwesomeIcon icon={faClock} /> {t('reportedAt')} <b>{fmtTime(a.scraped || a.ref)}</b></div>
             <h1 className="store">
-              <span className="store-lead">Review365: Báo cáo kiểm tra sức khoẻ Google Maps của</span>
+              <span className="store-lead">{t('lead')}</span>
               <span className="store-id">
                 <span className="store-name">{first}{rest.length ? <> <span className="store-name-accent">{rest.join(' ')}</span></> : null}</span>
               </span>
             </h1>
             <div className="store-facts">
               {a.rating !== null ? (
-                <span className="rating"><FontAwesomeIcon icon={faStar} className="star" /><b>{a.rating.toFixed(1)}</b>{a.reviewCount !== null ? <span className="dim">({a.reviewCount.toLocaleString('vi-VN')} đánh giá)</span> : null}</span>
+                <span className="rating"><FontAwesomeIcon icon={faStar} className="star" /><b>{a.rating.toFixed(1)}</b>{a.reviewCount !== null ? <span className="dim">{t('reviewCount', { count: format.number(a.reviewCount) })}</span> : null}</span>
               ) : null}
               {a.category ? <span className="cat"><FontAwesomeIcon icon={faBuilding} />{a.category}</span> : null}
             </div>
@@ -201,40 +191,40 @@ function ReportHeader({ a }: { a: Audit }) {
                 <FontAwesomeIcon icon={faLocationDot} className="addr-ic" />
                 <div>
                   {a.address ? <div className="addr-text">{a.address}</div> : null}
-                  {a.url ? <a href={a.url} target="_blank" rel="noopener">Xem trên Google Maps <FontAwesomeIcon icon={faArrowUpRightFromSquare} /></a> : null}
+                  {a.url ? <a href={a.url} target="_blank" rel="noopener">{t('viewOnMaps')} <FontAwesomeIcon icon={faArrowUpRightFromSquare} /></a> : null}
                 </div>
               </div>
             ) : null}
             <p className="ov-lede">
               <FontAwesomeIcon icon={faCircleInfo} className="lede-ic" />
-              Đánh giá mức độ hoàn thiện hồ sơ Google Maps của doanh nghiệp và gợi ý cải thiện để tăng khả năng hiển thị, thu hút khách hàng.
+              {t('lede')}
             </p>
             <div className="unlock ov-unlock">
               <span className="ov-unlock-ic"><FontAwesomeIcon icon={faLock} /></span>
-              <p>Để xem đầy đủ báo cáo chẩn đoán, hãy đăng ký tài khoản Review365 ngay!</p>
-              <a className="cta" href={SIGNUP_URL} target="_blank" rel="noopener">Đăng ký ngay</a>
+              <p>{t('unlockText')}</p>
+              <a className="cta" href={SIGNUP_URL} target="_blank" rel="noopener">{t('unlockCta')}</a>
             </div>
           </div>
 
           <div className="ov-score">
             <p className="ov-note" aria-hidden="true">
-              Còn nhiều<br />tiềm năng!
+              {t.rich('note', { br: () => <br /> })}
               <svg viewBox="0 0 60 40"><path d="M50 4c4 16-6 30-36 30m0 0 8-7m-8 7 9 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </p>
-            <Donut t={t} total={all.length} />
+            <Donut counts={counts} total={all.length} />
             <ul className="ov-rows">
-              {PARTS.filter((p) => t[p.key] > 0).map((p) => {
-                const pct = Math.round((t[p.key] / all.length) * 100);
-                const locked = p.key === 'locked';
+              {PARTS.filter((key) => counts[key] > 0).map((key) => {
+                const pct = Math.round((counts[key] / all.length) * 100);
+                const locked = key === 'locked';
                 return (
-                  <li key={p.key}>
-                    <a className={`ov-row ${p.key}`} href={locked ? SIGNUP_URL : '#details'} {...(locked ? { target: '_blank', rel: 'noopener' } : {})}>
-                      <span className="ov-row-ic"><FontAwesomeIcon icon={PART_ICON[p.key]} /></span>
+                  <li key={key}>
+                    <a className={`ov-row ${key}`} href={locked ? SIGNUP_URL : '#details'} {...(locked ? { target: '_blank', rel: 'noopener' } : {})}>
+                      <span className="ov-row-ic"><FontAwesomeIcon icon={PART_ICON[key]} /></span>
                       <span className="ov-row-text">
-                        <b>{p.label}</b>
-                        {locked ? <span className="unlock-hint">Đăng ký để mở khoá <FontAwesomeIcon icon={faArrowRight} /></span> : <span>{pct}% tiêu chí</span>}
+                        <b>{t(`parts.${key}`)}</b>
+                        {locked ? <span className="unlock-hint">{t('unlockHint')} <FontAwesomeIcon icon={faArrowRight} /></span> : <span>{t('partShare', { pct })}</span>}
                       </span>
-                      <span className="ov-row-num">{t[p.key]}</span>
+                      <span className="ov-row-num">{counts[key]}</span>
                       <FontAwesomeIcon icon={faChevronRight} className="ov-row-go" />
                     </a>
                   </li>
@@ -247,10 +237,10 @@ function ReportHeader({ a }: { a: Audit }) {
         <div className="ov-groups">
           <div className="ov-groups-head">
             <div>
-              <h2>Theo nhóm tiêu chí</h2>
-              <p>Chi tiết tình trạng và tiến độ của từng nhóm tiêu chí</p>
+              <h2>{t('groupsTitle')}</h2>
+              <p>{t('groupsSub')}</p>
             </div>
-            <a className="ov-all" href="#details">Xem chi tiết tất cả tiêu chí <FontAwesomeIcon icon={faChevronRight} /></a>
+            <a className="ov-all" href="#details">{t('viewAll')} <FontAwesomeIcon icon={faChevronRight} /></a>
           </div>
           <ul className="ov-group-grid">
             {a.groups.map((g) => {
@@ -262,15 +252,15 @@ function ReportHeader({ a }: { a: Audit }) {
                   <div className="ov-group-body">
                     <div className="ov-group-row">
                       <h3>{g.name}</h3>
-                      <div className="ov-group-count"><b>{gt.pass}</b>/{g.checks.length} <small>đạt</small></div>
+                      <div className="ov-group-count"><b>{gt.pass}</b>/{g.checks.length} <small>{t('passed')}</small></div>
                     </div>
                     <div className="ov-group-row">
-                      <div className="ov-progress" role="img" aria-label={`${g.name}: ${gt.pass}/${g.checks.length} đạt`}>
+                      <div className="ov-progress" role="img" aria-label={`${g.name}: ${gt.pass}/${g.checks.length} ${t('passed')}`}>
                         <span style={{ width: `${(gt.pass / g.checks.length) * 100}%` }} />
                       </div>
-                      <span className="ov-chip"><FontAwesomeIcon icon={TONE[tone].icon} />{TONE[tone].label}</span>
+                      <span className="ov-chip"><FontAwesomeIcon icon={TONE_ICON[tone]} />{t(`tones.${tone}`)}</span>
                     </div>
-                    <p>{GROUP_BLURB[g.key]}</p>
+                    <p>{t(`blurbs.${g.key}`)}</p>
                   </div>
                 </li>
               );
@@ -279,7 +269,7 @@ function ReportHeader({ a }: { a: Audit }) {
           <div className="ov-groups-foot">
             <p className="ov-hand">
               <svg viewBox="0 0 34 24" aria-hidden="true"><path d="M3 3c0 12 8 18 22 16m0 0-5-5m5 5-6 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              Cải thiện từng tiêu chí – Nâng tầm thương hiệu
+              {t('footer')}
               <FontAwesomeIcon icon={faArrowTrendUp} />
             </p>
             <Skyline />
@@ -293,6 +283,8 @@ function ReportHeader({ a }: { a: Audit }) {
 const STARS = [0, 1, 2, 3, 4].map((i) => <FontAwesomeIcon key={i} icon={faStar} />);
 
 function ReviewSummary({ a, dist }: { a: Audit; dist: number[] }) {
+  const t = useTranslations('review');
+  const format = useFormatter();
   const sum = dist.reduce((x, y) => x + y, 0);
   const total = a.reviewCount ?? sum;
   const pct = (n: number) => (sum ? Math.round((n / sum) * 100) : 0);
@@ -304,27 +296,27 @@ function ReviewSummary({ a, dist }: { a: Audit; dist: number[] }) {
     <div className="reviews-summary">
       <div className="rs-score">
         <div className="rs-avg">{a.rating !== null ? a.rating.toFixed(1) : '—'}</div>
-        <div className="rs-stars" aria-label={a.rating !== null ? `${a.rating.toFixed(1)} trên 5 sao` : 'Chưa có điểm'}>
+        <div className="rs-stars" aria-label={a.rating !== null ? t('outOf5', { rating: a.rating.toFixed(1) }) : t('noScore')}>
           <span className="rs-stars-fill" style={{ width: `${((a.rating ?? 0) / 5) * 100}%` }}>{STARS}</span>{STARS}
         </div>
-        <div className="rs-total">{total.toLocaleString('vi-VN')} đánh giá</div>
+        <div className="rs-total">{t('total', { count: total })}</div>
       </div>
 
-      <ul className="rs-dist" aria-label="Phân bố đánh giá theo số sao">
+      <ul className="rs-dist" aria-label={t('distLabel')}>
         {dist.map((n, i) => (
-          <li key={i} data-tip={`${5 - i} sao: ${n.toLocaleString('vi-VN')} đánh giá (${pct(n)}%)`}>
+          <li key={i} data-tip={t('tip', { stars: 5 - i, count: format.number(n), pct: pct(n) })}>
             <span className="rs-star-label">{5 - i}<FontAwesomeIcon icon={faStar} /></span>
             <span className="rs-track"><span className="rs-bar" style={{ width: `${(n / max) * 100}%` }} /></span>
-            <span className="rs-count">{n.toLocaleString('vi-VN')}</span>
+            <span className="rs-count">{format.number(n)}</span>
             <span className="rs-pct">{pct(n)}%</span>
           </li>
         ))}
       </ul>
 
       <div className="rs-insights">
-        <div><b>{positive}%</b><span>tích cực (4–5 sao)</span></div>
-        <div><b>{pct(dist[2])}%</b><span>trung lập (3 sao)</span></div>
-        <div><b>{negative}%</b><span>tiêu cực (1–2 sao)</span></div>
+        <div><b>{positive}%</b><span>{t('positive')}</span></div>
+        <div><b>{pct(dist[2])}%</b><span>{t('neutral')}</span></div>
+        <div><b>{negative}%</b><span>{t('negative')}</span></div>
       </div>
     </div>
   );

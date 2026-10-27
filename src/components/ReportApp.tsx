@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { RULES, audit, type Place } from '@/lib/audit';
+import { CHECK_KEYS, audit, type Place, type Translate } from '@/lib/audit';
 import { parseMapsTarget } from '@/lib/maps-link';
+import { LocaleSwitcher } from './LocaleSwitcher';
 import { Report } from './Report';
 
 const POLL_MS = 4_000;
@@ -13,29 +15,28 @@ const POLL_LIMIT_MS = 10 * 60_000;
 /** Consecutive network failures tolerated while polling before giving up. */
 const POLL_RETRIES = 3;
 
-const INVALID_LINK = 'Link chưa đúng — cần link Google Maps của một địa điểm (maps.app.goo.gl/…, google.com/maps/place/…)';
-const FAILED = 'Không lấy được dữ liệu cửa hàng — vui lòng thử lại sau';
-const CRITERIA = Object.keys(RULES).length;
+/** The last report, so switching language (a new /[locale] page) brings it straight back. */
+const LAST_KEY = 'r365:last';
 
-/** Typed in turn into the empty search box; the first line is also the static placeholder. */
-const PLACEHOLDERS = ['Dán link Google Maps của cửa hàng', 'https://maps.app.goo.gl/…', 'https://www.google.com/maps/place/…'];
+/** Errors thrown while crawling carry a message key (search.errors.*), worded in the user's language when shown. */
+class CrawlError extends Error {}
 
 const isPlace = (x: unknown): x is Place =>
   !!x && typeof x === 'object' && !Array.isArray(x) && !!((x as Place).title || (x as Place).placeId);
 
 /**
- * fetch + JSON. Only input errors (bad link) are worded for the end user;
+ * fetch + JSON. Only input errors (bad link) get their own message;
  * server/Apify problems are logged and shown as a generic failure.
  */
 async function api<T>(input: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(input, init);
   const body = (await res.json().catch(() => null)) as (T & { error?: string }) | null;
   if (!res.ok) {
-    if (res.status === 400 || res.status === 422) throw new Error(body?.error || INVALID_LINK);
+    if (res.status === 400 || res.status === 422) throw new CrawlError('invalidLink');
     console.error('[crawl]', res.status, body?.error);
-    throw new Error(FAILED);
+    throw new CrawlError('failed');
   }
-  if (!body) throw new Error(FAILED);
+  if (!body) throw new CrawlError('failed');
   return body;
 }
 
@@ -69,27 +70,40 @@ function useTypewriter(lines: readonly string[], on: boolean): string {
 }
 
 export function ReportApp() {
+  const t = useTranslations();
   const [place, setPlace] = useState<Place | null>(null);
   const [link, setLink] = useState('');
+  /** Message keys under search.errors, rendered in the current language. */
   const [linkError, setLinkError] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   /** The link behind the report on screen; searching it again would only repeat the crawl. */
   const [reportedLink, setReportedLink] = useState<string | null>(null);
   const abort = useRef<AbortController | null>(null);
-  const placeholder = useTypewriter(PLACEHOLDERS, !link && !running);
+  // A stable array, so the typewriter only restarts when the language changes.
+  const placeholders = useMemo(() => t.raw('search.placeholders') as string[], [t]);
+  const placeholder = useTypewriter(placeholders, !link && !running);
 
-  const report = useMemo(() => (place ? audit(place) : null), [place]);
+  const report = useMemo(() => (place ? audit(place, t as unknown as Translate) : null), [place, t]);
   const idle = !running && !report;
 
   useEffect(() => () => abort.current?.abort(), []);
-  useEffect(() => { document.title = report ? `Review365: Báo cáo kiểm tra sức khoẻ Google Maps của ${report.name}` : 'Báo cáo Google Business Profile'; }, [report]);
+  useEffect(() => { document.title = report ? t('meta.reportTitle', { name: report.name }) : t('meta.title'); }, [report, t]);
+
+  // Bring back the report shown before a language switch (or a reload in this tab).
+  useEffect(() => {
+    let saved: { link: string; place: Place } | null = null;
+    try { saved = JSON.parse(sessionStorage.getItem(LAST_KEY) || 'null'); } catch { /* storage unavailable */ }
+    if (!saved?.place) return;
+    const { link: savedLink, place: savedPlace } = saved;
+    queueMicrotask(() => { setLink(savedLink); setReportedLink(savedLink); setPlace(savedPlace); });
+  }, []);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     const target = link.trim();
     if (running || target === reportedLink) return;
-    if (!parseMapsTarget(link)) { setLinkError(INVALID_LINK); return; }
+    if (!parseMapsTarget(link)) { setLinkError('invalidLink'); return; }
     setLinkError(null);
     setError(null);
     setRunning(true);
@@ -111,7 +125,7 @@ export function ReportApp() {
       for (;;) {
         await wait(POLL_MS, signal);
         if (signal.aborted) return;
-        if (Date.now() - startedAt > POLL_LIMIT_MS) throw new Error(FAILED);
+        if (Date.now() - startedAt > POLL_LIMIT_MS) throw new CrawlError('failed');
 
         let run: { done: boolean; status: string; items?: unknown[] };
         try {
@@ -124,17 +138,18 @@ export function ReportApp() {
           throw err;
         }
         if (!run.done) continue;
-        if (run.status !== 'SUCCEEDED') throw new Error(FAILED);
+        if (run.status !== 'SUCCEEDED') throw new CrawlError('failed');
 
         const found = (run.items ?? []).find(isPlace);
-        if (!found) throw new Error('Không tìm thấy cửa hàng từ link này — kiểm tra lại link có trỏ đúng một địa điểm không');
+        if (!found) throw new CrawlError('notFound');
         setPlace(found);
         setReportedLink(target);
+        try { sessionStorage.setItem(LAST_KEY, JSON.stringify({ link: target, place: found })); } catch { /* storage full or blocked */ }
         return;
       }
     } catch (err) {
       if (signal.aborted) return;
-      setError(err instanceof TypeError ? 'Mất kết nối — kiểm tra mạng rồi thử lại' : (err as Error).message);
+      setError(err instanceof TypeError ? 'offline' : err instanceof CrawlError ? err.message : 'failed');
     } finally {
       if (abort.current === ctrl) abort.current = null;
       if (!signal.aborted) setRunning(false);
@@ -155,13 +170,14 @@ export function ReportApp() {
     <div className={idle ? 'app idle' : 'app'}>
       <header className="hero" onPointerMove={idle ? spotlight : undefined}>
         <div className="backdrop" aria-hidden="true"><div className="dots" /><div className="dots lit" /></div>
+        <LocaleSwitcher />
         <form className="crawl wrap" onSubmit={onSubmit} noValidate>
-          {idle ? <p className="eyebrow"><span className="dot" aria-hidden="true" />Miễn phí · Có kết quả sau 1–2 phút</p> : null}
+          {idle ? <p className="eyebrow"><span className="dot" aria-hidden="true" />{t('search.eyebrow')}</p> : null}
           <h1 className="logo">
-            <span>Chẩn đoán hồ sơ</span>
+            <span>{t('search.heading')}</span>
             <Image src="/google-maps-logo.svg" alt="Google Maps" width={584} height={92} priority unoptimized />
           </h1>
-          {idle ? <p className="pitch">Biết ngay hồ sơ Google Maps của cửa hàng đang mất khách ở đâu.</p> : null}
+          {idle ? <p className="pitch">{t('search.pitch')}</p> : null}
           <div className="search" aria-invalid={!!linkError}>
             <input
               type="url"
@@ -169,7 +185,7 @@ export function ReportApp() {
               value={link}
               onChange={(e) => { setLink(e.target.value); setLinkError(null); }}
               placeholder={placeholder}
-              aria-label="Link Google Maps của cửa hàng"
+              aria-label={t('search.inputLabel')}
               aria-invalid={!!linkError}
               spellCheck={false}
               autoFocus
@@ -177,23 +193,23 @@ export function ReportApp() {
             />
             <button type="submit" className="go" disabled={running || !link.trim() || link.trim() === reportedLink}>
               {running ? <span className="spinner" aria-hidden="true" /> : <FontAwesomeIcon icon={faMagnifyingGlass} />}
-              <span className="label">{running ? 'Đang phân tích…' : 'Chẩn đoán'}</span>
+              <span className="label">{running ? t('search.running') : t('search.submit')}</span>
             </button>
           </div>
-          {linkError ? <div className="field-error" role="alert">{linkError}</div> : null}
-          {error ? <div className="status error" role="alert">{error}</div> : null}
+          {linkError ? <div className="field-error" role="alert">{t(`search.errors.${linkError}`)}</div> : null}
+          {error ? <div className="status error" role="alert">{t(`search.errors.${error}`)}</div> : null}
           {idle ? (
             <>
               <ul className="perks">
-                <li><FontAwesomeIcon icon={faCheck} />Không cần đăng nhập</li>
-                <li><FontAwesomeIcon icon={faCheck} />Không cần cài đặt</li>
-                <li><FontAwesomeIcon icon={faCheck} />{CRITERIA} tiêu chí của Review365</li>
+                <li><FontAwesomeIcon icon={faCheck} />{t('search.perkNoLogin')}</li>
+                <li><FontAwesomeIcon icon={faCheck} />{t('search.perkNoInstall')}</li>
+                <li><FontAwesomeIcon icon={faCheck} />{t('search.perkCriteria', { count: CHECK_KEYS.length })}</li>
               </ul>
               <details className="howto">
-                <summary>Lấy link Google Maps ở đâu?</summary>
+                <summary>{t('search.howtoSummary')}</summary>
                 <ol>
-                  <li>Mở Google Maps và tìm cửa hàng của bạn.</li>
-                  <li>Chọn <b>Sao chép đường liên kết</b> rồi dán vào ô phía trên.</li>
+                  <li>{t('search.howtoStep1')}</li>
+                  <li>{t.rich('search.howtoStep2', { b: (chunks) => <b>{chunks}</b> })}</li>
                 </ol>
               </details>
             </>

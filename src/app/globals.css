@@ -243,6 +243,30 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
   .results::before { display: none; }
 }
 
+/* language picker: top-right of the hero, and of the sticky bar once results are on screen */
+.lang-switch { position: absolute; z-index: 5; top: 16px; right: max(16px, calc(50% - 584px)); }
+.app:not(.idle) .lang-switch { top: 50%; translate: 0 -50%; }
+/* keep the search pill clear of the picker in the sticky bar */
+.app:not(.idle) .crawl { padding-right: 112px; }
+.lang-btn { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border: 1px solid var(--border); border-radius: 999px; background: rgba(255, 255, 255, .9); color: var(--brand); font: inherit; font-size: var(--fs-sm); font-weight: 500; cursor: pointer; box-shadow: 0 2px 8px rgba(15, 47, 45, .06); transition: border-color .2s, box-shadow .2s; }
+.lang-btn:hover, .lang-btn[aria-expanded=true] { border-color: var(--brand); box-shadow: 0 4px 14px rgba(15, 47, 45, .12); }
+.lang-btn:disabled { opacity: .6; cursor: progress; }
+.lang-caret { font-size: 10px; transition: rotate .2s; }
+.lang-btn[aria-expanded=true] .lang-caret { rotate: 180deg; }
+.lang-menu { position: absolute; top: calc(100% + 8px); right: 0; min-width: 180px; margin: 0; padding: 6px; list-style: none; border: 1px solid var(--border); border-radius: 14px; background: var(--card); box-shadow: 0 12px 32px rgba(15, 47, 45, .14); }
+.lang-menu button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 10px; border: 0; border-radius: 10px; background: none; color: var(--fg); font: inherit; font-size: var(--fs-sm); text-align: left; cursor: pointer; }
+.lang-menu button:hover { background: var(--surface); }
+.lang-menu [aria-selected=true] button { color: var(--brand); font-weight: 500; }
+.lang-code { width: 26px; padding: 1px 0; border-radius: 6px; background: var(--surface); color: var(--muted); font-size: 11px; font-weight: 600; text-align: center; }
+.lang-tick { margin-left: auto; color: var(--teal); font-size: 12px; }
+@media (max-width: 640px) {
+  .lang-switch { top: 12px; right: 12px; }
+  .app:not(.idle) .lang-switch { top: 14px; translate: none; }
+  .app:not(.idle) .crawl { padding-right: 16px; }
+  .lang-btn { height: 34px; padding: 0 12px; }
+}
+@media print { .lang-switch { display: none; } }
+
 /* search hero, styled after the Google home page */
 .crawl { display: grid; justify-items: center; gap: 12px; }
 .eyebrow { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 4px; padding: 6px 14px; border: 1px solid rgba(15, 61, 59, .14); border-radius: 999px; background: rgba(255, 255, 255, .8); color: var(--brand); font-size: var(--fs-sm); font-weight: 500; }

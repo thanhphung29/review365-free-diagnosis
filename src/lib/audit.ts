@@ -46,41 +46,23 @@ export interface Audit {
 export type Place = Record<string, unknown>;
 
 // ── Checklist definition (REVIEW365, 20 items) ─────────────────────────────
-// Criteria the public crawl can only approximate are reported as unmeasurable (see Review365_Analysis_1_Store.xlsx)
-const GROUPS: { key: GroupKey; name: string }[] = [
-  { key: 'basic', name: 'Thông tin cơ bản' },
-  { key: 'posts', name: 'Bài đăng' },
-  { key: 'photos', name: 'Ảnh' },
-  { key: 'reviews', name: 'Đánh giá' },
-];
-export const GRADE_LABEL: Record<Grade, string> = { A: 'Xuất sắc', B: 'Tốt', C: 'Trung bình', D: 'Cần cải thiện', E: 'Kém' };
+// Criteria the public crawl can only approximate are reported as unmeasurable (see Review365_Analysis_1_Store.xlsx).
+// Every user-facing string comes from the locale messages (messages/*.json): groups.*, checks.<key>.*, measure.*.
+const GROUP_KEYS: GroupKey[] = ['basic', 'posts', 'photos', 'reviews'];
+
+/** The 20 criteria, in report order. */
+export const CHECK_KEYS = [
+  'name', 'category', 'description', 'openingDate', 'address', 'hours', 'hoursAccuracy', 'services', 'website', 'phone',
+  'postFreq', 'postKw',
+  'photoCount', 'photoFreq', 'logo',
+  'avg', 'count', 'reviewFreq', 'replyKw', 'replyRate',
+] as const;
+
+/** A message lookup, e.g. next-intl's `t`; keeps this module free of any i18n library. */
+export type Translate = (key: string, values?: Record<string, string | number>) => string;
 
 /** A store whose newest review is older than this is not getting reviews often enough. */
 const REVIEW_FRESH_DAYS = 30;
-
-// How each criterion is decided from the crawl — shown in the grading note.
-export const RULES: Record<string, string> = {
-  name: 'Không tính — Maps công khai không cho biết từ khóa mục tiêu để xác định tên có bị chèn từ khóa',
-  category: 'Đạt nếu có danh mục chính (categoryName)',
-  description: 'Đạt nếu có mô tả kinh doanh (description)',
-  openingDate: 'Không tính — Maps công khai không có ngày khai trương',
-  address: 'Đạt nếu có đủ số nhà/đường + phường hoặc tỉnh/thành',
-  hours: 'Đạt nếu có giờ mở cửa (openingHours)',
-  hoursAccuracy: 'Không tính — Maps công khai không có giờ hoạt động thực tế để đối chiếu',
-  services: 'Không tính — Maps công khai không trả về danh mục dịch vụ khai báo trên GBP',
-  website: 'Đạt nếu có website',
-  phone: 'Đạt nếu có số điện thoại',
-  postFreq: 'Đạt nếu bài đăng mới nhất của chủ quán cách ngày crawl ≤ 7 ngày',
-  postKw: 'Không tính — Maps công khai không cho biết từ khóa mục tiêu của cửa hàng',
-  photoCount: 'Đạt nếu tổng số ảnh trên hồ sơ (chủ quán + khách hàng) ≥ 10',
-  photoFreq: 'Không tính — Maps công khai không phân biệt chắc chắn ảnh do chủ sở hữu đăng',
-  logo: 'Không tính — Maps công khai không có dữ liệu logo riêng',
-  avg: 'Đạt nếu điểm trung bình ≥ 4.4★',
-  count: 'Đạt nếu số đánh giá ≥ 100',
-  reviewFreq: `Đạt nếu đánh giá mới nhất cách ngày crawl ≤ ${REVIEW_FRESH_DAYS} ngày`,
-  replyKw: 'Không tính — không crawl nội dung review (chi phí quá cao)',
-  replyRate: 'Không tính — không crawl nội dung review (chi phí quá cao)',
-};
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 const str = (v: unknown) => (typeof v === 'string' && v.trim() ? v.normalize('NFC') : null);
@@ -96,12 +78,12 @@ function grade(passed: number, measured: number): Grade | null {
   return r >= 1 ? 'A' : r >= 0.8 ? 'B' : r >= 0.6 ? 'C' : r >= 0.4 ? 'D' : 'E';
 }
 
-interface CheckOpts { unavailable?: boolean; measurable?: boolean; measure?: string; fix?: string }
+interface CheckOpts { unavailable?: boolean; measurable?: boolean; measure?: string }
 
 // ── Audit ───────────────────────────────────────────────────────────────────
-export function audit(p: Place): Audit {
+export function audit(p: Place, t: Translate): Audit {
   const ref = date(p.scrapedAt) || new Date();
-  const name = str(p.title) || '(không tên)';
+  const name = str(p.title) || t('measure.noName');
   const category = str(p.categoryName) || str(arr(p.categories)[0]);
   const nb = str(p.neighborhood), city = str(p.city);
   const rating = num(p.totalScore), reviewCount = num(p.reviewsCount);
@@ -113,37 +95,32 @@ export function audit(p: Place): Audit {
   const detailPage = hours.length > 0 || !!rec(p.additionalInfo) || !!hist || !!distRaw || !!description;
   const images = arr(p.images).filter((i) => rec(i) && date(rec(i)!.uploadedAt));
 
-  const C = (key: string, title: string, desc: string, ok: boolean, opts: CheckOpts = {}): Check => ({
-    key, title, desc,
+  const C = (key: (typeof CHECK_KEYS)[number], ok: boolean, opts: CheckOpts = {}): Check => ({
+    key,
+    title: t(`checks.${key}.title`),
+    desc: t(`checks.${key}.desc`, { days: REVIEW_FRESH_DAYS }),
     status: opts.unavailable ? 'UNAVAILABLE' : opts.measurable === false ? 'UNKNOWN' : ok ? 'PASS' : 'FAIL',
-    measure: opts.measure || '', fix: opts.fix || '',
+    measure: opts.measure || '',
+    fix: t(`checks.${key}.fix`),
   });
-  const NEED_DETAIL = 'Cần crawl trang chi tiết (scrapePlaceDetailPage)';
+  const NEED_DETAIL = t('measure.needDetail');
 
   // Basic
   const street = str(p.street), address = str(p.address);
 
   const basic = [
-    C('name', 'Tên doanh nghiệp', 'Tránh chèn từ khóa không liên quan vào tên doanh nghiệp', false,
-      { unavailable: true, measure: 'Maps công khai không cho biết từ khóa mục tiêu để xác định tên có bị chèn từ khóa' }),
-    C('category', 'Danh mục chính', 'Danh mục chính liên quan nhất cho các dịch vụ của bạn đã được thiết lập', !!category,
-      { measure: category ? `Danh mục: ${category}` : 'Chưa có danh mục', fix: 'Thiết lập danh mục chính phù hợp nhất' }),
-    C('description', 'Mô tả kinh doanh', 'Mô tả kinh doanh được thiết lập chính xác', !!description,
-      { measurable: detailPage, measure: !detailPage ? NEED_DETAIL : description ? `${description.length} ký tự` : 'Chưa có mô tả', fix: 'Viết mô tả 250–750 ký tự có từ khóa dịch vụ & khu vực' }),
-    C('openingDate', 'Ngày bắt đầu', 'Ngày mở cửa đã được cấu hình', false,
-      { unavailable: true, measure: 'Google Maps công khai không trả về ngày khai trương' }),
-    C('address', 'Địa chỉ', 'Tỉnh, địa chỉ đường, tên tòa nhà được đặt đúng', !!address && !!street && !!(nb || city),
-      { measure: address || 'Chưa có địa chỉ', fix: 'Bổ sung đủ số nhà, tên đường, phường/quận, tỉnh' }),
-    C('hours', 'Giờ kinh doanh được cấu hình', 'Giờ kinh doanh đã được cấu hình', hours.length > 0,
-      { measurable: detailPage, measure: !detailPage ? NEED_DETAIL : hours.length ? `${hours.length}/7 ngày có giờ` : 'Chưa cài giờ', fix: 'Cài giờ mở cửa cho cả 7 ngày' }),
-    C('hoursAccuracy', 'Độ chính xác giờ kinh doanh', 'Giờ kinh doanh khớp với giờ thực tế của cửa hàng', false,
-      { unavailable: true, measure: 'Maps công khai không có giờ hoạt động thực tế để đối chiếu' }),
-    C('services', 'Danh mục / dịch vụ', 'Danh mục dịch vụ được thiết lập', false,
-      { unavailable: true, measure: 'Maps công khai không trả về danh mục dịch vụ khai báo trên GBP' }),
-    C('website', 'Địa chỉ website', 'Đường dẫn trang web cửa hàng đã được cấu hình', !!str(p.website),
-      { measure: str(p.website) || 'Chưa có website', fix: 'Gắn website (hoặc landing page) cho hồ sơ' }),
-    C('phone', 'Số điện thoại', 'Số điện thoại cửa hàng đã được thiết lập', !!str(p.phone),
-      { measure: str(p.phone) || 'Chưa có số điện thoại', fix: 'Thêm số điện thoại liên hệ' }),
+    C('name', false, { unavailable: true, measure: t('measure.nameKw') }),
+    C('category', !!category, { measure: category ? t('measure.category', { value: category }) : t('measure.noCategory') }),
+    C('description', !!description,
+      { measurable: detailPage, measure: !detailPage ? NEED_DETAIL : description ? t('measure.descChars', { count: description.length }) : t('measure.noDesc') }),
+    C('openingDate', false, { unavailable: true, measure: t('measure.openingDate') }),
+    C('address', !!address && !!street && !!(nb || city), { measure: address || t('measure.noAddress') }),
+    C('hours', hours.length > 0,
+      { measurable: detailPage, measure: !detailPage ? NEED_DETAIL : hours.length ? t('measure.hoursDays', { count: hours.length }) : t('measure.noHours') }),
+    C('hoursAccuracy', false, { unavailable: true, measure: t('measure.hoursAccuracy') }),
+    C('services', false, { unavailable: true, measure: t('measure.services') }),
+    C('website', !!str(p.website), { measure: str(p.website) || t('measure.noWebsite') }),
+    C('phone', !!str(p.phone), { measure: str(p.phone) || t('measure.noPhone') }),
   ];
 
   // Posts
@@ -152,21 +129,18 @@ export function audit(p: Place): Audit {
     .sort((a, b) => (b.d?.getTime() || 0) - (a.d?.getTime() || 0));
   const sincePost = posts[0]?.d ? days(posts[0].d, ref) : null;
   const postsG = [
-    C('postFreq', 'Tần suất đăng bài', 'Có ít nhất một bài đăng mỗi tuần', sincePost !== null && sincePost <= 7,
-      { measurable: detailPage, measure: !detailPage ? NEED_DETAIL : !posts.length ? 'Chưa có bài đăng nào' : `${posts.length} bài · bài mới nhất ${sincePost ?? '?'} ngày trước`, fix: 'Đăng ít nhất 1 bài / tuần (khuyến mãi, món mới, sự kiện)' }),
-    C('postKw', 'Sử dụng từ khóa trong bài đăng mới nhất', 'Bài đăng mới nhất bao gồm các từ khóa mục tiêu', false,
-      { unavailable: true, measure: 'Maps công khai không cho biết từ khóa mục tiêu của cửa hàng' }),
+    C('postFreq', sincePost !== null && sincePost <= 7,
+      { measurable: detailPage, measure: !detailPage ? NEED_DETAIL : !posts.length ? t('measure.noPosts') : t('measure.posts', { count: posts.length, days: sincePost ?? '?' }) }),
+    C('postKw', false, { unavailable: true, measure: t('measure.postKw') }),
   ];
 
   // Photos
   const imgCount = num(p.imagesCount);
   const photosG = [
-    C('photoCount', 'Số lượng ảnh', 'Hồ sơ có từ 10 ảnh trở lên (gồm cả ảnh khách hàng đăng)', (imgCount || 0) >= 10,
-      { measurable: imgCount !== null, measure: imgCount !== null ? `${imgCount} ảnh trên hồ sơ` : 'Không có dữ liệu số ảnh', fix: 'Tải thêm ảnh không gian, sản phẩm, đội ngũ' }),
-    C('photoFreq', 'Tần suất đăng ảnh', 'Ảnh gần nhất được cung cấp bởi chủ sở hữu trong tháng trước', false,
-      { unavailable: true, measure: 'Maps công khai không phân biệt chắc chắn ảnh do chủ sở hữu đăng' }),
-    C('logo', 'Hình ảnh logo và ảnh bìa', 'Logo và ảnh bìa đã được đặt', false,
-      { unavailable: true, measure: 'Maps công khai không có dữ liệu logo riêng' }),
+    C('photoCount', (imgCount || 0) >= 10,
+      { measurable: imgCount !== null, measure: imgCount !== null ? t('measure.photos', { count: imgCount }) : t('measure.noPhotoData') }),
+    C('photoFreq', false, { unavailable: true, measure: t('measure.photoFreq') }),
+    C('logo', false, { unavailable: true, measure: t('measure.logo') }),
   ];
 
   // Reviews — the crawl fetches only the newest one
@@ -175,25 +149,25 @@ export function audit(p: Place): Audit {
     .filter((r) => r.d !== null)
     .sort((a, b) => b.d!.getTime() - a.d!.getTime())[0] ?? null;
   const sinceReview = newest ? days(newest.d!, ref) : null;
+  const newestText = newest ? (sinceReview === 0 ? t('measure.newestToday') : t('measure.newestDays', { days: sinceReview ?? 0 })) : '';
   const reviewsG = [
-    C('avg', 'Đánh giá trung bình', 'Đánh giá sao là 4.4 điểm trở lên', (rating || 0) >= 4.4,
-      { measurable: rating !== null, measure: rating !== null ? `${rating.toFixed(1)} ★` : 'Không có điểm', fix: 'Mời khách hài lòng để lại đánh giá' }),
-    C('count', 'Số lượng đánh giá', '100 đánh giá trở lên đã nhận được', (reviewCount || 0) >= 100,
-      { measurable: reviewCount !== null, measure: reviewCount !== null ? `${reviewCount} đánh giá` : 'Không có dữ liệu', fix: 'Gắn QR / link đánh giá tại quầy, hóa đơn, tin nhắn' }),
-    C('reviewFreq', 'Tần suất đánh giá', `Có đánh giá mới trong vòng ${REVIEW_FRESH_DAYS} ngày qua`, sinceReview !== null && sinceReview <= REVIEW_FRESH_DAYS,
+    C('avg', (rating || 0) >= 4.4,
+      { measurable: rating !== null, measure: rating !== null ? t('measure.avg', { rating: rating.toFixed(1) }) : t('measure.noScore') }),
+    C('count', (reviewCount || 0) >= 100,
+      { measurable: reviewCount !== null, measure: reviewCount !== null ? t('measure.reviews', { count: reviewCount }) : t('measure.noData') }),
+    C('reviewFreq', sinceReview !== null && sinceReview <= REVIEW_FRESH_DAYS,
       { measurable: !!newest || reviewCount === 0,
-        measure: newest ? `Đánh giá mới nhất ${sinceReview === 0 ? 'hôm nay' : `${sinceReview} ngày trước`}${newest.stars ? ` · ${newest.stars}★` : ''}` : reviewCount === 0 ? 'Chưa có đánh giá nào' : 'Không có dữ liệu đánh giá mới nhất',
-        fix: 'Chủ động mời khách để lại đánh giá sau mỗi lần sử dụng dịch vụ' }),
-    C('replyKw', 'Đáp án đánh giá', 'Đánh giá trả lời bao gồm từ khóa nhãn hiệu (tên cửa hàng / khu vực)', false,
-      { unavailable: true, measure: 'Không crawl nội dung review (chi phí quá cao) nên không có câu trả lời của chủ quán' }),
-    C('replyRate', 'Tỷ lệ trả lời đánh giá', 'Tối thiểu 90% đánh giá được trả lời', false,
-      { unavailable: true, measure: 'Không crawl nội dung review (chi phí quá cao) nên không có câu trả lời của chủ quán' }),
+        measure: newest ? (newest.stars ? t('measure.newestStars', { text: newestText, stars: newest.stars }) : newestText)
+          : reviewCount === 0 ? t('measure.noReviews') : t('measure.noNewest') }),
+    C('replyKw', false, { unavailable: true, measure: t('measure.replyNotCrawled') }),
+    C('replyRate', false, { unavailable: true, measure: t('measure.replyNotCrawled') }),
   ];
 
   const groups = [basic, postsG, photosG, reviewsG].map((checks, i): Group => {
     const passed = checks.filter((c) => c.status === 'PASS').length;
     const measured = checks.filter((c) => c.status === 'PASS' || c.status === 'FAIL').length;
-    return { ...GROUPS[i], checks, passed, measured, total: checks.length, grade: grade(passed, measured) };
+    const key = GROUP_KEYS[i];
+    return { key, name: t(`groups.${key}`), checks, passed, measured, total: checks.length, grade: grade(passed, measured) };
   });
   const passed = groups.reduce((s, g) => s + g.passed, 0), measured = groups.reduce((s, g) => s + g.measured, 0);
   return { name, category, address, url: str(p.url), ref, scraped: date(p.scrapedAt), rating, reviewCount, dist, groups,
