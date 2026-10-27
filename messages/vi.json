@@ -2,7 +2,9 @@
   "meta": {
     "title": "Review: Báo cáo Google Business Profile",
     "description": "Chẩn đoán hồ sơ Google Business Profile theo Review365",
-    "reportTitle": "Review365: Báo cáo kiểm tra sức khoẻ Google Maps của {name}"
+    "reportTitle": "Review365: Báo cáo kiểm tra sức khoẻ Google Maps của {name}",
+    "ogHeadline": "Chẩn đoán hồ sơ Google Maps miễn phí",
+    "ogSub": "20 tiêu chí · Kết quả sau 1–2 phút · Không cần đăng nhập"
   },
   "lang": {
     "label": "Ngôn ngữ",

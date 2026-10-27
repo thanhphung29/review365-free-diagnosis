@@ -2,7 +2,9 @@
   "meta": {
     "title": "Review: Googleビジネスプロフィール診断レポート",
     "description": "Review365でGoogleビジネスプロフィールを診断します",
-    "reportTitle": "Review365：{name} のGoogleマップ健康診断レポート"
+    "reportTitle": "Review365：{name} のGoogleマップ健康診断レポート",
+    "ogHeadline": "Googleマップのプロフィールを無料診断",
+    "ogSub": "20項目 · 1〜2分で結果 · ログイン不要"
   },
   "lang": {
     "label": "言語",

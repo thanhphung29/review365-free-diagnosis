@@ -5,6 +5,7 @@ import { routing } from './i18n/routing';
 export default createMiddleware(routing);
 
 export const config = {
-  // Everything except the API, Next internals and files with an extension.
-  matcher: '/((?!api|_next|_vercel|.*\\..*).*)',
+  // Everything except the API, Next internals, files with an extension and the share images
+  // (/vi/opengraph-image must be served as is, not redirected to the unprefixed path).
+  matcher: '/((?!api|_next|_vercel|.*opengraph-image|.*\\..*).*)',
 };
