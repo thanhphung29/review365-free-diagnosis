@@ -178,13 +178,13 @@ function Skyline() {
 
 /** Report overview: the store, the overall pass / fail / locked split on a dark score panel, and a card per group. */
 /** Share the report's link where people talk, copy it, or print it to PDF; beside the report time. */
-// `sheet`: on phones the Facebook / LinkedIn apps catch these links and open on their home feed, dropping
-// the link; the system share sheet hands the link to the app properly instead.
 const SOCIAL = [
-  { key: 'facebook', name: 'Facebook', icon: faFacebook, sheet: true, href: (u: string) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(u)}` },
-  { key: 'x', name: 'X', icon: faXTwitter, sheet: false, href: (u: string, text: string) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(u)}&text=${encodeURIComponent(text)}` },
-  { key: 'linkedin', name: 'LinkedIn', icon: faLinkedin, sheet: true, href: (u: string) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(u)}` },
+  { key: 'facebook', name: 'Facebook', icon: faFacebook, href: (u: string) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(u)}` },
+  { key: 'x', name: 'X', icon: faXTwitter, href: (u: string, text: string) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(u)}&text=${encodeURIComponent(text)}` },
+  { key: 'linkedin', name: 'LinkedIn', icon: faLinkedin, href: (u: string) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(u)}` },
 ];
+// Phones skip the menu for the system share sheet: the Facebook / LinkedIn apps catch the web share links
+// and open on their home feed, dropping the link, while the sheet hands it to any app properly.
 const isPhone = () => matchMedia('(pointer: coarse)').matches && typeof navigator.share === 'function';
 
 function ReportActions({ shareUrl }: { shareUrl: string | null }) {
@@ -216,20 +216,18 @@ function ReportActions({ shareUrl }: { shareUrl: string | null }) {
     <div className="ov-actions">
       {shareUrl ? (
         <div className="share" ref={box}>
-          <button type="button" className="ov-action" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+          <button type="button" className="ov-action" aria-haspopup="menu" aria-expanded={open}
+            onClick={() => {
+              if (!isPhone()) { setOpen((v) => !v); return; }
+              navigator.share({ title: document.title, url: shareUrl }).catch(() => { /* dismissed */ });
+            }}>
             <FontAwesomeIcon icon={faShareNodes} />{t('share')}
           </button>
           {open ? (
             <ul className="share-menu" role="menu">
               {SOCIAL.map((s) => (
                 <li key={s.key} role="none">
-                  <a role="menuitem" className={`share-${s.key}`} href={s.href(shareUrl, document.title)} target="_blank" rel="noopener"
-                    onClick={(e) => {
-                      setOpen(false);
-                      if (!s.sheet || !isPhone()) return;
-                      e.preventDefault();
-                      navigator.share({ title: document.title, url: shareUrl }).catch(() => { /* dismissed */ });
-                    }}>
+                  <a role="menuitem" className={`share-${s.key}`} href={s.href(shareUrl, document.title)} target="_blank" rel="noopener" onClick={() => setOpen(false)}>
                     <FontAwesomeIcon icon={s.icon} fixedWidth />{s.name}
                   </a>
                 </li>
