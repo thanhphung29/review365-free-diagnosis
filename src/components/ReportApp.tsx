@@ -302,6 +302,8 @@ export function ReportApp() {
             </>
           ) : null}
         </form>
+        {/* Apify reports no real progress: the bar is paced by CSS and stops short of the end until the result is in. */}
+        {running ? <div className="progress" role="progressbar" aria-label={t('search.running')} /> : null}
       </header>
 
       {running || report ? (
