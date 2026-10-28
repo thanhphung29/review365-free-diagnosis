@@ -234,7 +234,7 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 .item .body { flex: 1; min-width: 0; }
 .item .title { font-weight: 500; font-size: var(--fs-base); }
 .item .desc { font-size: 12px; color: var(--muted); }
-.item .measure { font-size: 12px; color: var(--subtle); margin-top: 2px; }
+.item .measure { font-size: 12px; color: var(--subtle); margin-top: 2px; overflow-wrap: anywhere; }
 /* unmeasurable checks: dimmed + blurred details */
 .item.locked { background: var(--na-bg); border-style: dashed; }
 .item.locked .title { color: var(--muted); }
