@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent } from 'react';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faStethoscope } from '@fortawesome/free-solid-svg-icons';
 import { audit, type Place, type Translate } from '@/lib/audit';
 import { parseMapsTarget } from '@/lib/maps-link';
+import { routing } from '@/i18n/routing';
 import { LocaleSwitcher } from './LocaleSwitcher';
 import { Report } from './Report';
 
@@ -120,6 +121,7 @@ function useTypewriter(lines: readonly string[], on: boolean): string {
 
 export function ReportApp() {
   const t = useTranslations();
+  const locale = useLocale();
   const [place, setPlace] = useState<Place | null>(null);
   const [link, setLink] = useState('');
   /** Message keys under search.errors, rendered in the current language. */
@@ -235,6 +237,10 @@ export function ReportApp() {
     <div className={idle ? 'app idle' : 'app'}>
       <header className="hero" onPointerMove={idle ? spotlight : undefined}>
         <div className="backdrop" aria-hidden="true"><div className="dots" /><div className="dots lit" /></div>
+        {/* A full page load, so the logo always lands on an empty search page. */}
+        <a className="brand" href={locale === routing.defaultLocale ? '/' : `/${locale}`}>
+          <Image src="/review-365-logo-blue.png" alt="Review365" width={600} height={126} priority />
+        </a>
         <LocaleSwitcher />
         <form className="crawl wrap" onSubmit={onSubmit} noValidate>
           {idle ? <p className="eyebrow"><span className="dot" aria-hidden="true" />{t('search.eyebrow')}</p> : null}

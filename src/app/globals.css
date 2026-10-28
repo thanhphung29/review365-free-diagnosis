@@ -442,3 +442,26 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
   .print-link { margin: 24px 0 0; padding-top: 12px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }
   .print-link a { color: var(--teal); word-break: break-all; }
 }
+
+/* Review365 logo, top-left of the header, mirroring the language switch on the right. */
+.brand { position: absolute; z-index: 5; top: 16px; left: max(16px, calc(50% - 584px)); display: block; line-height: 0; }
+.brand img { width: auto; height: 32px; }
+.app:not(.idle) .brand { top: 50%; translate: 0 -50%; }
+.app:not(.idle) .brand img { height: 26px; }
+.app:not(.idle) .crawl { padding-left: 156px; }
+/* Tablets: no room for logo, heading, search and language on one line, so logo + language take a row above. */
+@media screen and (max-width: 991px) {
+  .app:not(.idle) .brand { top: 19px; translate: none; }
+  .app:not(.idle) .lang-switch { top: 14px; translate: none; }
+  .app:not(.idle) .crawl { padding: 44px 16px 0; }
+  .app:not(.idle) .logo span { white-space: nowrap; }
+}
+@media screen and (max-width: 640px) {
+  .brand { top: 14px; left: 16px; }
+  .brand img, .app:not(.idle) .brand img { height: 24px; }
+  .app:not(.idle) .brand { top: 19px; translate: none; }
+  .app:not(.idle) .crawl { padding-left: 16px; padding-top: 44px; }
+  .app:not(.idle) .logo { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; }
+  .app:not(.idle) .logo img { height: 20px; }
+}
+@media print { .brand { display: none; } }
