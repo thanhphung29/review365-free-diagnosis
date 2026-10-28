@@ -16,6 +16,7 @@
     "pitch": "See exactly where your store's Google Maps profile is losing customers.",
     "placeholders": ["Paste your store's Google Maps link", "https://maps.app.goo.gl/…", "https://www.google.com/maps/place/…"],
     "inputLabel": "Your store's Google Maps link",
+    "clear": "Clear link",
     "submit": "Check",
     "running": "Analysing…",
     "perkNoLogin": "No sign-in needed",
@@ -25,7 +26,7 @@
     "howtoStep1": "Open Google Maps and find your store.",
     "howtoStep2": "Choose <b>Copy link</b> and paste it in the box above.",
     "errors": {
-      "invalidLink": "That link doesn't look right — we need the Google Maps link of a single place (maps.app.goo.gl/…, google.com/maps/place/…)",
+      "invalidLink": "That link doesn't look right — we need the Google Maps link of a single place (<u>maps.app.goo.gl/…</u>, <u>google.com/maps/place/…</u>)",
       "failed": "We couldn't fetch the store's data — please try again later",
       "notFound": "No store found for this link — check that it points to a single place",
       "offline": "Connection lost — check your network and try again",

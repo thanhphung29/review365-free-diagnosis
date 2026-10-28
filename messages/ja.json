@@ -16,6 +16,7 @@
     "pitch": "お店のGoogleマップのプロフィールが、どこで来店を逃しているかがすぐにわかります。",
     "placeholders": ["お店のGoogleマップのリンクを貼り付け", "https://maps.app.goo.gl/…", "https://www.google.com/maps/place/…"],
     "inputLabel": "お店のGoogleマップのリンク",
+    "clear": "リンクを消去",
     "submit": "診断する",
     "running": "分析中…",
     "perkNoLogin": "ログイン不要",
@@ -25,7 +26,7 @@
     "howtoStep1": "Googleマップを開いて、お店を検索します。",
     "howtoStep2": "<b>リンクをコピー</b>を選び、上の入力欄に貼り付けます。",
     "errors": {
-      "invalidLink": "リンクが正しくありません。1つの場所を示すGoogleマップのリンクが必要です（maps.app.goo.gl/…、google.com/maps/place/…）",
+      "invalidLink": "リンクが正しくありません。1つの場所を示すGoogleマップのリンクが必要です（<u>maps.app.goo.gl/…</u>、<u>google.com/maps/place/…</u>）",
       "failed": "お店のデータを取得できませんでした。しばらくしてからもう一度お試しください",
       "notFound": "このリンクからお店が見つかりませんでした。1つの場所を示すリンクか確認してください",
       "offline": "接続が切れました。ネットワークを確認して、もう一度お試しください",

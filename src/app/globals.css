@@ -50,8 +50,6 @@ body { margin: 0; background: var(--bg); color: var(--fg); font: var(--fs-base)/
 .tree-item > .card { margin-bottom: 0; }
 .tree-item > .card > .item-grid:first-child, .tree-item > .card > .reviews-summary:first-child { margin-top: 0; }
 @media screen and (max-width: 640px) {
-  .details-tree { padding-left: 36px; }
-  .details-tree::before { left: 13px; }
   .tree-node { left: -36px; width: 28px; height: 28px; }
 }
 /* Full-screen illustrated backdrop that stays put while the report scrolls over it.
@@ -115,9 +113,6 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 .ov-score::before, .ov-score::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; }
 .ov-score::before { top: -200px; right: -200px; width: 440px; height: 440px; background: var(--moss-2); }
 .ov-score::after { top: -110px; right: -110px; width: 260px; height: 260px; border: 1px solid rgba(160, 150, 80, .45); }
-.ov-note { position: absolute; z-index: 1; top: 22px; right: 22px; margin: 0; font-family: var(--font-hand), cursive; font-size: var(--fs-h3); line-height: 1.1; text-align: right; color: #fff; rotate: -8deg; }
-.ov-note-logo { display: block; width: 120px; height: auto; }
-.ov-note svg { display: block; width: 46px; margin: 4px 18px 0 auto; color: #fff; }
 .donut { position: relative; width: 196px; height: 196px; overflow: visible; }
 .donut .arc { transition: stroke-width .15s; }
 .donut .arc:hover { stroke-width: 8; }
@@ -201,7 +196,6 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
   .store-facts { margin-left: 0; gap: 6px 18px; }
   .store-facts > * + *::before { display: none; }
   .ov-groups { padding: 20px 16px; }
-  .ov-note { font-size: var(--fs-h3); }
 }
 
 
@@ -305,6 +299,7 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 .howto summary::-webkit-details-marker { display: none; }
 .howto summary:hover { color: var(--brand); }
 .howto ol { margin: 10px 0 0; padding: 12px 16px 12px 36px; text-align: left; background: rgba(255, 255, 255, .9); border: 1px solid var(--border); border-radius: 12px; line-height: 1.8; }
+:lang(ja) .howto li { text-wrap: pretty; }
 /* Idle entrance: the pieces rise in one after another. */
 .app.idle .crawl > * { animation: rise .7s cubic-bezier(.2, .8, .2, 1) both; }
 .app.idle .crawl > :nth-child(2) { animation-delay: .08s; }
@@ -332,6 +327,8 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 /* iOS Safari zooms the page into any input under 16px on focus — keep it at 16 there. */
 @supports (-webkit-touch-callout: none) { .search input { font-size: 16px; } }
 .search input::placeholder { color: var(--subtle); }
+.search .clear { flex: none; display: inline-grid; place-items: center; width: 40px; height: 40px; margin: 0 -4px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--subtle); font-size: 15px; cursor: pointer; transition: background .2s, color .2s; }
+.search .clear:hover, .search .clear:focus-visible { background: var(--surface); color: var(--fg); }
 .search input:disabled { color: var(--muted); }
 .search .go { position: relative; isolation: isolate; overflow: hidden; flex: none; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--cta); color: #fff; font: inherit; font-size: var(--fs-sm); font-weight: 500; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 14px rgba(229, 89, 66, .3); transition: transform .2s ease, box-shadow .2s ease; }
 /* Hover: a brand-colored wave rises from the bottom, as on the review365.vn CTAs. */
@@ -356,7 +353,10 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 
 
 /* crawl flow */
-.field-error { font-size: var(--fs-sm); color: var(--bad-fg); }
+.field-error { max-width: 720px; font-size: var(--fs-sm); color: var(--bad-fg); text-align: center; }
+.field-error .nowrap, .status .nowrap { white-space: nowrap; }
+.app:not(.idle) .field-error { text-align: start; }
+@media screen and (max-width: 640px) { .field-error { text-wrap: balance; } }
 .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 999px; margin-right: 6px; vertical-align: -1px; animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .sk { border-radius: 8px; background: linear-gradient(90deg, var(--track) 25%, var(--na-bg) 50%, var(--track) 75%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }

@@ -16,6 +16,7 @@
     "pitch": "Biết ngay hồ sơ Google Maps của cửa hàng đang mất khách ở đâu.",
     "placeholders": ["Dán link Google Maps của cửa hàng", "https://maps.app.goo.gl/…", "https://www.google.com/maps/place/…"],
     "inputLabel": "Link Google Maps của cửa hàng",
+    "clear": "Xoá link",
     "submit": "Chẩn đoán",
     "running": "Đang phân tích…",
     "perkNoLogin": "Không cần đăng nhập",
@@ -25,7 +26,7 @@
     "howtoStep1": "Mở Google Maps và tìm cửa hàng của bạn.",
     "howtoStep2": "Chọn <b>Sao chép đường liên kết</b> rồi dán vào ô phía trên.",
     "errors": {
-      "invalidLink": "Link chưa đúng — cần link Google Maps của một địa điểm (maps.app.goo.gl/…, google.com/maps/place/…)",
+      "invalidLink": "Link chưa đúng — cần link Google Maps của một địa điểm (<u>maps.app.goo.gl/…</u>, <u>google.com/maps/place/…</u>)",
       "failed": "Không lấy được dữ liệu cửa hàng — vui lòng thử lại sau",
       "notFound": "Không tìm thấy cửa hàng từ link này — kiểm tra lại link có trỏ đúng một địa điểm không",
       "offline": "Mất kết nối — kiểm tra mạng rồi thử lại",
@@ -95,7 +96,7 @@
     "photoFreq": { "title": "Tần suất đăng ảnh", "desc": "Ảnh gần nhất được cung cấp bởi chủ sở hữu trong tháng trước", "fix": "" },
     "logo": { "title": "Hình ảnh logo và ảnh bìa", "desc": "Logo và ảnh bìa đã được đặt", "fix": "" },
     "avg": { "title": "Đánh giá trung bình", "desc": "Đánh giá sao là 4.4 điểm trở lên", "fix": "Mời khách hài lòng để lại đánh giá" },
-    "count": { "title": "Số lượng đánh giá", "desc": "100 đánh giá trở lên đã nhận được", "fix": "Gắn QR / link đánh giá tại quầy, hóa đơn, tin nhắn" },
+    "count": { "title": "Số lượng đánh giá", "desc": "Nhận được 100 đánh giá trở lên", "fix": "Gắn QR / link đánh giá tại quầy, hóa đơn, tin nhắn" },
     "reviewFreq": { "title": "Tần suất đánh giá", "desc": "Có đánh giá mới trong vòng {days} ngày qua", "fix": "Chủ động mời khách để lại đánh giá sau mỗi lần sử dụng dịch vụ" },
     "replyKw": { "title": "Đáp án đánh giá", "desc": "Đánh giá trả lời bao gồm từ khóa nhãn hiệu (tên cửa hàng / khu vực)", "fix": "" },
     "replyRate": { "title": "Tỷ lệ trả lời đánh giá", "desc": "Tối thiểu 90% đánh giá được trả lời", "fix": "" }

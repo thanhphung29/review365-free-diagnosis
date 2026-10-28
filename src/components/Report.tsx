@@ -298,10 +298,6 @@ function ReportHeader({ a, shareUrl }: { a: Audit; shareUrl: string | null }) {
           </div>
 
           <div className="ov-score">
-            <p className="ov-note" aria-hidden="true">
-              <Image src="/review-365-logo.png" alt="" width={2400} height={502} className="ov-note-logo" />
-              <svg viewBox="0 0 60 40"><path d="M50 4c4 16-6 30-36 30m0 0 8-7m-8 7 9 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            </p>
             <Donut counts={counts} total={all.length} />
             <ul className="ov-rows">
               {PARTS.filter((key) => counts[key] > 0).map((key) => {

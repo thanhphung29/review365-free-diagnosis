@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faStethoscope } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faStethoscope, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { audit, type Place, type Translate } from '@/lib/audit';
 import { parseMapsTarget } from '@/lib/maps-link';
 import { routing } from '@/i18n/routing';
@@ -133,6 +133,7 @@ export function ReportApp() {
   /** Address that reopens the report on screen (?r=<runId>); null until a run has finished. */
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const abort = useRef<AbortController | null>(null);
+  const input = useRef<HTMLInputElement>(null);
   // A stable array, so the typewriter only restarts when the language changes.
   const placeholders = useMemo(() => t.raw('search.placeholders') as string[], [t]);
   const placeholder = useTypewriter(placeholders, !link && !running);
@@ -223,6 +224,9 @@ export function ReportApp() {
     }
   }
 
+  /** An error message; <u> marks a sample link, kept whole so it never breaks across lines. */
+  const errorText = (key: string) => t.rich(`search.errors.${key}`, { u: (chunks) => <span className="nowrap">{chunks}</span> });
+
   /** Moves the backdrop's spotlight (--x/--y on the hero) under the mouse. */
   function spotlight(e: PointerEvent<HTMLElement>) {
     if (e.pointerType !== 'mouse') return;
@@ -251,6 +255,7 @@ export function ReportApp() {
           {idle ? <p className="pitch">{t('search.pitch')}</p> : null}
           <div className="search" aria-invalid={!!linkError}>
             <input
+              ref={input}
               type="url"
               inputMode="url"
               value={link}
@@ -262,13 +267,24 @@ export function ReportApp() {
               autoFocus
               disabled={running}
             />
+            {link && !running ? (
+              <button
+                type="button"
+                className="clear"
+                onClick={() => { setLink(''); setLinkError(null); input.current?.focus(); }}
+                aria-label={t('search.clear')}
+                title={t('search.clear')}
+              >
+                <FontAwesomeIcon icon={faXmark} />
+              </button>
+            ) : null}
             <button type="submit" className="go" disabled={running || !link.trim() || link.trim() === reportedLink}>
               {running ? <span className="spinner" aria-hidden="true" /> : <FontAwesomeIcon icon={faStethoscope} />}
               <span className="label">{running ? t('search.running') : t('search.submit')}</span>
             </button>
           </div>
-          {linkError ? <div className="field-error" role="alert">{t(`search.errors.${linkError}`)}</div> : null}
-          {error ? <div className="status error" role="alert">{t(`search.errors.${error}`)}</div> : null}
+          {linkError ? <div className="field-error" role="alert">{errorText(linkError)}</div> : null}
+          {error ? <div className="status error" role="alert">{errorText(error)}</div> : null}
           {idle ? (
             <>
               <ul className="perks">
