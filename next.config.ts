@@ -3,6 +3,9 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  // Optimize production Docker image
+  output: "standalone",
+
   cacheComponents: true,
   partialPrefetching: true,
   // The report's floating share/PDF buttons sit bottom-left, where the dev indicator would cover them.
