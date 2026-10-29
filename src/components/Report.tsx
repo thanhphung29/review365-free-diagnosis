@@ -82,6 +82,7 @@ export function Report({ a, shareUrl }: { a: Audit; shareUrl: string | null }) {
           {t('scrollTop')}
         </a>
       </div>
+      <ReportActions shareUrl={shareUrl} floating />
       {/* Printed / PDF copies only: where to open the live report again. */}
       {shareUrl ? <p className="wrap print-only print-link">{t('printLink')} <a href={shareUrl}>{shareUrl}</a></p> : null}
     </>
@@ -187,7 +188,8 @@ const SOCIAL = [
 // and open on their home feed, dropping the link, while the sheet hands it to any app properly.
 const isPhone = () => matchMedia('(pointer: coarse)').matches && typeof navigator.share === 'function';
 
-function ReportActions({ shareUrl }: { shareUrl: string | null }) {
+/** Share and PDF buttons: labelled pills in the report header, or `floating` icon buttons pinned bottom-left. */
+function ReportActions({ shareUrl, floating = false }: { shareUrl: string | null; floating?: boolean }) {
   const t = useTranslations('overview');
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -213,15 +215,16 @@ function ReportActions({ shareUrl }: { shareUrl: string | null }) {
   }
 
   return (
-    <div className="ov-actions">
+    <div className={floating ? 'fab-actions' : 'ov-actions'}>
       {shareUrl ? (
         <div className="share" ref={box}>
           <button type="button" className="ov-action" aria-haspopup="menu" aria-expanded={open}
+            aria-label={floating ? t('share') : undefined} title={floating ? t('share') : undefined}
             onClick={() => {
               if (!isPhone()) { setOpen((v) => !v); return; }
               navigator.share({ title: document.title, url: shareUrl }).catch(() => { /* dismissed */ });
             }}>
-            <FontAwesomeIcon icon={faShareNodes} />{t('share')}
+            <FontAwesomeIcon icon={faShareNodes} />{floating ? null : t('share')}
           </button>
           {open ? (
             <ul className="share-menu" role="menu">
@@ -241,8 +244,9 @@ function ReportActions({ shareUrl }: { shareUrl: string | null }) {
           ) : null}
         </div>
       ) : null}
-      <button type="button" className="ov-action" onClick={() => window.print()}>
-        <FontAwesomeIcon icon={faFilePdf} />{t('pdf')}
+      <button type="button" className="ov-action" onClick={() => window.print()}
+        aria-label={floating ? t('pdf') : undefined} title={floating ? t('pdf') : undefined}>
+        <FontAwesomeIcon icon={faFilePdf} />{floating ? null : t('pdf')}
       </button>
     </div>
   );

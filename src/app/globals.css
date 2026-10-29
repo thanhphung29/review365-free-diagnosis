@@ -80,6 +80,13 @@ h2 { font-size: var(--fs-h2); margin: 0; color: var(--brand); display: flex; ali
 .share-facebook svg { color: #1877f2; }
 .share-x svg { color: #000; }
 .share-linkedin svg { color: #0a66c2; }
+/* The same actions as round icon buttons, pinned bottom-left while the report scrolls; the share menu opens upwards. */
+.fab-actions { position: fixed; z-index: 20; left: 24px; bottom: 24px; display: flex; flex-direction: column; gap: 10px; }
+.fab-actions .ov-action { width: 44px; height: 44px; padding: 0; justify-content: center; background: var(--card); box-shadow: 0 4px 14px rgba(15, 47, 45, .14); }
+.fab-actions .ov-action svg { font-size: 17px; }
+.fab-actions .share-menu { top: auto; bottom: 0; left: calc(100% + 10px); }
+@media screen and (max-width: 640px) { .fab-actions { left: 12px; bottom: 16px; } }
+@media print { .fab-actions { display: none !important; } }
 .ov-time { display: inline-flex; align-items: center; gap: 8px; font-size: var(--fs-sm); color: var(--muted); }
 .ov-time svg { color: #8a9a99; }
 .ov-time b { color: var(--fg); font-weight: 500; }
