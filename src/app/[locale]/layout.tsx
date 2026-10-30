@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Be_Vietnam_Pro, Dancing_Script } from 'next/font/google';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { config } from '@fortawesome/fontawesome-svg-core';
@@ -17,6 +18,8 @@ const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   : 'http://localhost:3000';
 const OG_LOCALE: Record<Locale, string> = { vi: 'vi_VN', en: 'en_US', ja: 'ja_JP' };
 const SHARE_IMAGE = { url: '/thumb-op.png', width: 940, height: 529, alt: 'Review365' };
+/** Google Analytics measurement id; no tag is added when it is unset (local dev, previews). */
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID?.trim();
 
 const sans = Be_Vietnam_Pro({ subsets: ['latin', 'vietnamese'], weight: ['400', '500', '600', '700'], variable: '--font-sans' });
 const hand = Dancing_Script({ subsets: ['latin', 'vietnamese'], weight: ['500'], variable: '--font-hand' });
@@ -57,6 +60,7 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[lo
       <body>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
+      {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
     </html>
   );
 }
