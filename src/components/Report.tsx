@@ -10,6 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import type { Audit, Check, CheckStatus, GroupKey } from '@/lib/audit';
 import type { Locale } from '@/i18n/routing';
+import { track } from '@/lib/analytics';
 
 // Sign-up page in the visitor's language, linked from the locked checks' CTA.
 const SIGNUP_URL: Record<Locale, string> = {
@@ -188,7 +189,7 @@ const SOCIAL = [
 // and open on their home feed, dropping the link, while the sheet hands it to any app properly.
 const isPhone = () => matchMedia('(pointer: coarse)').matches && typeof navigator.share === 'function';
 
-/** Share and PDF buttons: labelled pills in the report header, or `floating` icon buttons pinned bottom-left. */
+/** Share and PDF buttons: labelled pills in the report header, or `floating` icon buttons pinned bottom-right. */
 function ReportActions({ shareUrl, floating = false }: { shareUrl: string | null; floating?: boolean }) {
   const t = useTranslations('overview');
   const [open, setOpen] = useState(false);
@@ -205,10 +206,15 @@ function ReportActions({ shareUrl, floating = false }: { shareUrl: string | null
     return () => { document.removeEventListener('pointerdown', onDown); document.removeEventListener('keydown', onKey); };
   }, [open]);
 
+  const placement = floating ? 'floating' : 'header';
+  /** GA's recommended share event; method is where the link went. */
+  const trackShare = (method: string) => track('share', { method, content_type: 'report', placement });
+
   async function copy() {
     if (!shareUrl) return;
     try {
       await navigator.clipboard.writeText(shareUrl);
+      trackShare('copy_link');
       setCopied(true);
       setTimeout(() => { setCopied(false); setOpen(false); }, 1200);
     } catch { /* clipboard blocked */ }
@@ -222,7 +228,8 @@ function ReportActions({ shareUrl, floating = false }: { shareUrl: string | null
             aria-label={floating ? t('share') : undefined} title={floating ? t('share') : undefined}
             onClick={() => {
               if (!isPhone()) { setOpen((v) => !v); return; }
-              navigator.share({ title: document.title, url: shareUrl }).catch(() => { /* dismissed */ });
+              // Counted only once the sheet reports a share, not when it is dismissed.
+              navigator.share({ title: document.title, url: shareUrl }).then(() => trackShare('native'), () => { /* dismissed */ });
             }}>
             <FontAwesomeIcon icon={faShareNodes} />{floating ? null : t('share')}
           </button>
@@ -230,7 +237,7 @@ function ReportActions({ shareUrl, floating = false }: { shareUrl: string | null
             <ul className="share-menu" role="menu">
               {SOCIAL.map((s) => (
                 <li key={s.key} role="none">
-                  <a role="menuitem" className={`share-${s.key}`} href={s.href(shareUrl, document.title)} target="_blank" rel="noopener" onClick={() => setOpen(false)}>
+                  <a role="menuitem" className={`share-${s.key}`} href={s.href(shareUrl, document.title)} target="_blank" rel="noopener" onClick={() => { trackShare(s.key); setOpen(false); }}>
                     <FontAwesomeIcon icon={s.icon} fixedWidth />{s.name}
                   </a>
                 </li>
@@ -244,7 +251,7 @@ function ReportActions({ shareUrl, floating = false }: { shareUrl: string | null
           ) : null}
         </div>
       ) : null}
-      <button type="button" className="ov-action" onClick={() => window.print()}
+      <button type="button" className="ov-action" onClick={() => { track('download_pdf', { placement }); window.print(); }}
         aria-label={floating ? t('pdf') : undefined} title={floating ? t('pdf') : undefined}>
         <FontAwesomeIcon icon={faFilePdf} />{floating ? null : t('pdf')}
       </button>

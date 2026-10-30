@@ -8,8 +8,6 @@ const nextConfig: NextConfig = {
 
   cacheComponents: true,
   partialPrefetching: true,
-  // The report's floating share/PDF buttons sit bottom-left, where the dev indicator would cover them.
-  devIndicators: { position: "bottom-right" },
 };
 
 export default createNextIntlPlugin("./src/i18n/request.ts")(nextConfig);
