@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faStethoscope, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { audit, type Place, type Translate } from '@/lib/audit';
+import { track } from '@/lib/analytics';
 import { parseMapsTarget } from '@/lib/maps-link';
 import { LocaleSwitcher } from './LocaleSwitcher';
 import { Report } from './Report';
@@ -190,6 +191,8 @@ export function ReportApp() {
     setLinkError(null);
     setError(null);
     setRunning(true);
+    // Each diagnosis started, then how it ended (outcome: success or a search.errors key).
+    track('diagnose');
     setShareUrl(null);
     setRunInUrl(null);
 
@@ -213,9 +216,12 @@ export function ReportApp() {
       setShareUrl(shareUrlFor(runId));
       setRunInUrl(runId);
       try { sessionStorage.setItem(LAST_KEY, JSON.stringify({ link: target, place: found, runId })); } catch { /* storage full or blocked */ }
+      track('diagnose_result', { outcome: 'success' });
     } catch (err) {
       if (signal.aborted) return;
-      setError(err instanceof TypeError ? 'offline' : err instanceof CrawlError ? err.message : 'failed');
+      const key = err instanceof TypeError ? 'offline' : err instanceof CrawlError ? err.message : 'failed';
+      setError(key);
+      track('diagnose_result', { outcome: key });
     } finally {
       if (abort.current === ctrl) abort.current = null;
       if (!signal.aborted) setRunning(false);
