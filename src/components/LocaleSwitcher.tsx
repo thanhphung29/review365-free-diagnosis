@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faChevronDown, faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { track } from '@/lib/analytics';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing, type Locale } from '@/i18n/routing';
 
@@ -30,6 +31,7 @@ export function LocaleSwitcher() {
   function choose(next: Locale) {
     setOpen(false);
     if (next === locale) return;
+    track('change_language', { from: locale, to: next, on_report: new URLSearchParams(location.search).has('r') ? 'yes' : 'no' });
     // Keep the query (?r=<runId>) so a shared report stays open in the new language.
     const query = Object.fromEntries(new URLSearchParams(location.search));
     startTransition(() => router.replace({ pathname, query }, { locale: next }));

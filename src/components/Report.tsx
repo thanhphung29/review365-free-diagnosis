@@ -69,9 +69,9 @@ export function Report({ a, shareUrl }: { a: Audit; shareUrl: string | null }) {
                 {/* "Thông tin cơ bản" has many checks, so its locked block spans the full width below; elsewhere it is one more grid cell. */}
                 <div className="item-grid">
                   {g.checks.filter((c) => isMeasured(c.status)).map(item)}
-                  {locked.length && g.key !== 'basic' ? <LockedZone checks={locked} /> : null}
+                  {locked.length && g.key !== 'basic' ? <LockedZone checks={locked} group={g.key} /> : null}
                 </div>
-                {locked.length && g.key === 'basic' ? <LockedZone checks={locked} /> : null}
+                {locked.length && g.key === 'basic' ? <LockedZone checks={locked} group={g.key} /> : null}
               </div>
             </section>
           );
@@ -90,8 +90,11 @@ export function Report({ a, shareUrl }: { a: Audit; shareUrl: string | null }) {
   );
 }
 
+/** A click on a sign-up link; cta names which one, group the detail group of a locked block. */
+const trackSignup = (cta: string, group?: GroupKey) => track('click_signup', group ? { cta, group } : { cta });
+
 /** A group's locked checks in one clearly-locked block. */
-function LockedZone({ checks }: { checks: Check[] }) {
+function LockedZone({ checks, group }: { checks: Check[]; group: GroupKey }) {
   const t = useTranslations('overview');
   return (
     <div className="locked-zone">
@@ -101,7 +104,7 @@ function LockedZone({ checks }: { checks: Check[] }) {
           <b>{t('locked', { count: checks.length })}</b>
           <ul className="lz-titles">{checks.map((c) => <li key={c.key}>{c.title}</li>)}</ul>
         </div>
-        <a className="cta" href={useSignupUrl()} target="_blank" rel="noopener">{t('lockedCta')}</a>
+        <a className="cta" href={useSignupUrl()} target="_blank" rel="noopener" onClick={() => trackSignup('locked_zone', group)}>{t('lockedCta')}</a>
       </div>
     </div>
   );
@@ -304,7 +307,7 @@ function ReportHeader({ a, shareUrl }: { a: Audit; shareUrl: string | null }) {
             <div className="unlock ov-unlock">
               <span className="ov-unlock-ic"><FontAwesomeIcon icon={faLock} /></span>
               <p>{t('unlockText')}</p>
-              <a className="cta" href={signupUrl} target="_blank" rel="noopener">{t('unlockCta')}</a>
+              <a className="cta" href={signupUrl} target="_blank" rel="noopener" onClick={() => trackSignup('unlock_notice')}>{t('unlockCta')}</a>
             </div>
           </div>
 
@@ -316,7 +319,7 @@ function ReportHeader({ a, shareUrl }: { a: Audit; shareUrl: string | null }) {
                 const locked = key === 'locked';
                 return (
                   <li key={key}>
-                    <a className={`ov-row ${key}`} href={locked ? signupUrl : '#details'} {...(locked ? { target: '_blank', rel: 'noopener' } : {})}>
+                    <a className={`ov-row ${key}`} href={locked ? signupUrl : '#details'} {...(locked ? { target: '_blank', rel: 'noopener', onClick: () => trackSignup('score_locked') } : {})}>
                       <span className="ov-row-ic"><FontAwesomeIcon icon={PART_ICON[key]} /></span>
                       <span className="ov-row-text">
                         <b>{t(`parts.${key}`)}</b>
