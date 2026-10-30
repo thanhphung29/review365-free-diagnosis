@@ -295,7 +295,7 @@ export function ReportApp() {
                 <li><FontAwesomeIcon icon={faCheck} />{t('search.perkNoInstall')}</li>
                 <li><FontAwesomeIcon icon={faCheck} />{t('search.perkCriteria')}</li>
               </ul>
-              <details className="howto">
+              <details className="howto" onToggle={(e) => { if (e.currentTarget.open) track('view_howto'); }}>
                 <summary>{t('search.howtoSummary')}</summary>
                 <ol>
                   <li>{t('search.howtoStep1')}</li>
