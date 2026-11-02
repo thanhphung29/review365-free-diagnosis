@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent } from 'react';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faStethoscope, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { audit, type Place, type Translate } from '@/lib/audit';
@@ -121,6 +121,7 @@ function useTypewriter(lines: readonly string[], on: boolean): string {
 
 export function ReportApp() {
   const t = useTranslations();
+  const locale = useLocale();
   const [place, setPlace] = useState<Place | null>(null);
   const [link, setLink] = useState('');
   /** Message keys under search.errors, rendered in the current language. */
@@ -217,6 +218,13 @@ export function ReportApp() {
       setRunInUrl(runId);
       try { sessionStorage.setItem(LAST_KEY, JSON.stringify({ link: target, place: found, runId })); } catch { /* storage full or blocked */ }
       track('diagnose_result', { outcome: 'success' });
+      // Record the finished report in the team's Google Sheet; never holds up or breaks the page.
+      fetch('/api/report-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ runId, link: target, locale }),
+        keepalive: true,
+      }).catch(() => { /* logging is best effort */ });
     } catch (err) {
       if (signal.aborted) return;
       const key = err instanceof TypeError ? 'offline' : err instanceof CrawlError ? err.message : 'failed';
