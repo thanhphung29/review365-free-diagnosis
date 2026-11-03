@@ -61,7 +61,7 @@
     "locked": "{count} tiêu chí đang bị khoá",
     "lockedCta": "Mở khoá ngay",
     "share": "Chia sẻ", "copied": "Đã copy link", "copyLink": "Copy link", "pdf": "Tải PDF", "printLink": "Xem báo cáo trực tuyến:",
-    "scrollTop": "Scroll Top"
+    "scrollTop": "Lên đầu trang"
   },
   "review": {
     "outOf5": "{rating} trên 5 sao",

@@ -142,7 +142,15 @@ export function ReportApp() {
   const idle = !running && !report;
 
   useEffect(() => () => abort.current?.abort(), []);
-  useEffect(() => { document.title = report ? t('meta.reportTitle', { name: report.name }) : t('meta.title'); }, [report, t]);
+  useEffect(() => {
+    const title = report ? t('meta.reportTitle', { name: report.name }) : t('meta.title');
+    document.title = title;
+    if (!report) return;
+    // After a language switch Next rewrites <title> from the layout's metadata (the generic one); put the report's back.
+    const observer = new MutationObserver(() => { if (document.title !== title) document.title = title; });
+    observer.observe(document.head, { childList: true, subtree: true, characterData: true });
+    return () => observer.disconnect();
+  }, [report, t]);
 
   // The report on screen is the one named by ?r=<runId>; without it the page starts empty.
   // The copy kept in this tab saves a fetch when ?r= is the report just shown (reload, language switch).
@@ -209,6 +217,8 @@ export function ReportApp() {
         body: JSON.stringify({ url: link }),
         signal,
       });
+      // ?r= goes on as soon as the run exists, so a reload or a language switch mid-crawl picks the same run back up.
+      setRunInUrl(runId);
 
       const found = await followRun(runId, signal);
       if (!found) return;
@@ -228,6 +238,10 @@ export function ReportApp() {
     } catch (err) {
       if (signal.aborted) return;
       const key = err instanceof TypeError ? 'offline' : err instanceof CrawlError ? err.message : 'failed';
+      // A failed search drops the report that was on screen: the page goes back to the home search, showing the error there.
+      setPlace(null);
+      setReportedLink(null);
+      setRunInUrl(null);
       setError(key);
       track('diagnose_result', { outcome: key });
     } finally {
