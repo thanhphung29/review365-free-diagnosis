@@ -61,7 +61,7 @@
     "locked": "{count, plural, one {# locked criterion} other {# locked criteria}}",
     "lockedCta": "Unlock now",
     "share": "Share", "copied": "Link copied", "copyLink": "Copy link", "pdf": "Download PDF", "printLink": "View this report online:",
-    "scrollTop": "Scroll Top"
+    "scrollTop": "Back to top"
   },
   "review": {
     "outOf5": "{rating} out of 5 stars",

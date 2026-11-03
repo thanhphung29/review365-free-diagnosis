@@ -61,7 +61,7 @@
     "locked": "{count}項目がロック中",
     "lockedCta": "今すぐロック解除",
     "share": "共有", "copied": "リンクをコピーしました", "copyLink": "リンクをコピー", "pdf": "PDFをダウンロード", "printLink": "オンラインでレポートを見る：",
-    "scrollTop": "Scroll Top"
+    "scrollTop": "ページトップへ"
   },
   "review": {
     "outOf5": "5つ星中{rating}",
