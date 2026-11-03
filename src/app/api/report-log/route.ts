@@ -1,5 +1,6 @@
 import { routing } from '@/i18n/routing';
 import { appendReportLog, sheetLogEnabled } from '@/lib/sheet-log';
+import { publicOrigin } from '@/lib/site-url';
 
 const RUN_ID = /^[A-Za-z0-9]{8,32}$/;
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
   const locale = (routing.locales as readonly string[]).includes(str(body?.locale)) ? str(body?.locale) : routing.defaultLocale;
 
   // The same address the page shares: /?r=<runId>, /en?r=…, /ja?r=…
-  const report = new URL(locale === routing.defaultLocale ? '/' : `/${locale}`, request.url);
+  const report = new URL(locale === routing.defaultLocale ? '/' : `/${locale}`, publicOrigin(request));
   report.searchParams.set('r', runId);
 
   try {
